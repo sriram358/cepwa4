@@ -7,7 +7,7 @@ let rotateDire2 = "right"
 
 function setup(){
     createCanvas(1200, 800)
-
+    angleMode(DEGREES)
     player1head = new Sprite(200, 400, 100, 300)
     player2head = new Sprite(800, 400, 100, 300)
     player1body = new Sprite(200, 550, 100)
@@ -26,29 +26,37 @@ function setup(){
     player2body.friction = 1000
     player1body.rotationDrag = 10
     player2body.rotationDrag = 10
+    ampl = 10
 }
 
 function draw(){
     background(200)
-    ampl = 10
+   
     if(player1body.colliding(floor)){
-        if(player1body.rotation > 0){
-            if(frameCount - changeFrame > 30){
-                player1head.rotateTowards(200, 400, 0.01, 0)
-                changeFrame = frameCount
-                print("tick")
+        // if(player1body.rotation > 0){
+        //     if(frameCount - changeFrame > 30){
+        //         player1head.rotateTowards(200, 400, 0.01, 0)
+        //         changeFrame = frameCount
+        //         print("tick")
                 
-            }
+        //     }
             
-        } else{
-            if(frameCount - changeFrame > 30){
-                player1head.rotateTowards(200, 400, 0.01, 180)
-                changeFrame = frameCount
-                print("tock")
+        // } else{
+        //     if(frameCount - changeFrame > 30){
+        //         player1head.rotateTowards(200, 400, 0.01, 180)
+        //         changeFrame = frameCount
+        //         print("tock")
                 
-            }
+        //     }
             
+        // }
+        if(ampl > 0){
+            ampl -= 0.1
+        } else {
+            ampl = 0
         }
+        
+        player1head.rotation = 5*ampl*Math.cos(frameCount/60)
     }
 
     if(kb.presses('w')){
