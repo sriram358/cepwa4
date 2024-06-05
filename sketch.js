@@ -1,4 +1,4 @@
-let player1body, player1head, player1, player2body, player2head, player2, floor, ampl, collisionFrame
+let player1body, player1head, player1, player2body, player2head, player2, floor, ampl1, ampl2, collisionFrame1, collisionFrame2
 
 //let frameCount = 0;
 let changeFrame = -100;
@@ -8,62 +8,82 @@ let rotateDire2 = "right"
 function setup(){
     createCanvas(1200, 800)
     angleMode(DEGREES)
-    player1head = new Sprite(200, 600, 100, 300)
-    player2head = new Sprite(800, 600, 100, 300)
-    player1body = new Sprite(200, 750, 100)
-    player2body = new Sprite(800, 750, 100)
-
-    player1 = new GlueJoint(player1head, player1body)
-    player2 = new GlueJoint(player2head, player2body)
-    floor = new Sprite(600, 800, 1200, 1)
-    world.gravity.y = 10
+   
+    player1 = new Sprite(200, 550, 100)
+    player2 = new Sprite(800, 550, 100)
+    floor = new Sprite(600, 800, 1200, 4)
     floor.collider = "static"
-    player1head.rotation = 1
-    player2head.rotation = 1
-    player1head.rotationLock = true
-    player2head.rotationLock = true
-    player1body.friction = 1000
-    player2body.friction = 1000
-    player1body.rotationDrag = 10
-    player2body.rotationDrag = 10
-    ampl = 10
-    collisionFrame = 0
+    player1.d = 100
+    player2.d = 100
+    player1.rotation = -20
+    player2.rotation = 20
+    player1.bounciness = 0
+    player2.bounciness = 0
+    player1.rotationLock = true
+    player2.rotationLock = true
+    player1.friction = 1000
+    player2.friction = 1000
+    world.gravity.y = 10
+    ampl1 = 10
+    ampl2 = 10
+    collisionFrame1 = 0
+    collisionFrame2 = 0
+}
+
+function drawPlayer1(){
+    push()
+    translate(player1.pos.x, player1.pos.y)
+    rotate(player1.rotation)
+    fill(255, 0, 0)
+    circle(0, 0, 100)
+    rect(-50, -50-300, 100, 300)
+    pop()
+}
+
+function drawPlayer2(){
+    push()
+    //console.log("skibidi")
+    translate(player2.pos.x, player2.pos.y)
+    rotate(player2.rotation)
+    fill(0, 0, 255)
+    circle(0, 0, 100)
+    rect(-50, -50-300, 100, 300)
+    pop()
 }
 
 function draw(){
     background(200)
-   
-    if(player1body.colliding(floor)){
-        collisionFrame += 1;
-        // if(player1body.rotation > 0){
-        //     if(frameCount - changeFrame > 30){
-        //         player1head.rotateTowards(200, 400, 0.01, 0)
-        //         changeFrame = frameCount
-        //         print("tick")
-                
-        //     }
-            
-        // } else{
-        //     if(frameCount - changeFrame > 30){
-        //         player1head.rotateTowards(200, 400, 0.01, 180)
-        //         changeFrame = frameCount
-        //         print("tock")
-                
-        //     }
-            
-        // }
-        if(ampl > 0){
-            ampl -= 0.03
+    drawPlayer1()
+    drawPlayer2()
+    if(player1.colliding(floor)){
+        collisionFrame1 += 1;
+        if(ampl1 > 0){
+            ampl1 -= 0.03
         } else {
-            ampl = 0
+            ampl1 = 0
         }
         
-        player1head.rotation = 5*ampl*Math.cos(collisionFrame/30)
+        player1.rotation = 5*ampl1*Math.sin(collisionFrame1/30)
+    }
+
+    if(player2.colliding(floor)){
+        collisionFrame2 += 1;
+        if(ampl2 > 0){
+            ampl2 -= 0.03
+        } else {
+            ampl2 = 0
+        }
+        
+        player2.rotation = -5*ampl2*Math.sin(collisionFrame2/30)
     }
 
     if(kb.presses('w')){
-        player1head.velocity.y -= 10
-        player1head.velocity.x += 10*Math.sin(radians(player1head.rotation))
+        player1.velocity.y -= 5
+        player1.velocity.x += 5*Math.sin(radians(player1.rotation))
+    }
+    if(kb.presses('o')){
+        player2.velocity.y -= 5
+        player2.velocity.x += 5*Math.sin(radians(player2.rotation))
     }
     //player1head.rotateTowards(200, 400, 0.1, 0)
     
