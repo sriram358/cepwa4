@@ -56,6 +56,8 @@ function draw(){
     drawPlayer1()
     drawPlayer2()
     if(player1.colliding(floor)){
+        player1.rotationLock = false
+        
         collisionFrame1 += 1;
         if(ampl1 > 0){
             ampl1 -= 0.03
@@ -64,9 +66,12 @@ function draw(){
         }
         
         player1.rotation = 5*ampl1*Math.sin(collisionFrame1/30)
+    } else {
+        player1.rotationLock = true
     }
 
     if(player2.colliding(floor)){
+        player2.rotationLock = false
         collisionFrame2 += 1;
         if(ampl2 > 0){
             ampl2 -= 0.03
@@ -75,6 +80,8 @@ function draw(){
         }
         
         player2.rotation = -5*ampl2*Math.sin(collisionFrame2/30)
+    } else {
+        player2.rotationLock = true
     }
 
     if(kb.presses('w')){
