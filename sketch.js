@@ -1,4 +1,4 @@
-let player1body, player1head, player1, player2body, player2head, player2, floor, ampl1, ampl2, collisionFrame1, collisionFrame2, lastCollide1, lastCollide2
+let player1body, player1head, player1, player2body, player2head, player2, floor, ampl1, ampl2, collisionFrame1, collisionFrame2, lastCollide1, lastCollide2, initRotation1, initRotation2
 
 //let frameCount = 0;
 let changeFrame = -100;
@@ -25,10 +25,10 @@ function setup(){
     player2.friction = 1000
     floor.friction = 100
     world.gravity.y = 20
-    ampl1 = 10
-    ampl2 = 10
-    collisionFrame1 = 10
-    collisionFrame2 = 10
+    ampl1 = 1
+    ampl2 = 1
+    collisionFrame1 = 0
+    collisionFrame2 = 0
     lastCollide1 = 0
     lastCollide2 = 0
 }
@@ -80,9 +80,16 @@ function draw(){
         
         
     } else {
-        player1.rotationLock = false
+       
         if(frameCount - lastCollide1 > 5){
-            ampl1 += 0.5
+            player1.rotationLock = false
+            if(player1.rotation > 0){
+                collisionFrame1 = 0
+            } else {
+                collisionFrame1 = Math.PI*30
+            }
+            ampl1 = abs(player1.rotation/5)
+            ampl1 += min(0.1, max(2, ampl1)/50)
         }
         //collisionFrame1 += 0.8
     }
@@ -106,17 +113,24 @@ function draw(){
             player2.velocity.x += 8*Math.sin(radians(player2.rotation))
         }
     } else {
-        player2.rotationLock = false
+        
         if(frameCount - lastCollide2 > 5){
-            ampl2 += 0.5
-        }
+            player2.rotationLock = false
+            if(player2.rotation < 0){
+                collisionFrame2 = 0
+            } else {
+                collisionFrame2 = Math.PI*30
+            }
+            ampl2 = abs(player2.rotation/5)
+            ampl2 += min(0.1, max(2, ampl2)/50)
+        } 
         
         //collisionFrame2 += 0.8
     }
 
 
-    player1.rotation = 5*ampl1*Math.sin(collisionFrame1/30)
-    player2.rotation = -5*ampl2*Math.sin(collisionFrame2/30)
+    player1.rotation = 5*ampl1*Math.cos(collisionFrame1/30)
+    player2.rotation = -5*ampl2*Math.cos(collisionFrame2/30)
     
     //player1head.rotateTowards(200, 400, 0.1, 0)
     
