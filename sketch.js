@@ -1,4 +1,4 @@
-let player1body, player1head, player1, player2body, player2head, player2, floor, ampl1, ampl2, collisionFrame1, collisionFrame2
+let player1body, player1head, player1, player2body, player2head, player2, floor, ampl1, ampl2, collisionFrame1, collisionFrame2, lastCollide1, lastCollide2
 
 //let frameCount = 0;
 let changeFrame = -100;
@@ -15,19 +15,22 @@ function setup(){
     floor.collider = "static"
     player1.d = 100
     player2.d = 100
-    player1.rotation = -20
-    player2.rotation = 20
+    player1.rotation = 0
+    player2.rotation = 0
     player1.bounciness = 0
     player2.bounciness = 0
     player1.rotationLock = true
     player2.rotationLock = true
     player1.friction = 1000
     player2.friction = 1000
-    world.gravity.y = 10
+    floor.friction = 100
+    world.gravity.y = 20
     ampl1 = 10
     ampl2 = 10
-    collisionFrame1 = 0
-    collisionFrame2 = 0
+    collisionFrame1 = 10
+    collisionFrame2 = 10
+    lastCollide1 = 0
+    lastCollide2 = 0
 }
 
 function drawPlayer1(){
@@ -55,8 +58,12 @@ function draw(){
     background(200)
     drawPlayer1()
     drawPlayer2()
+    // Fixes bounce bug in planck (inherent of p5play sadly)
+    
     if(player1.colliding(floor)){
-        player1.rotationLock = false
+        lastCollide1 = frameCount
+        player1.vel.y = 0
+        player1.rotationLock = true
         
         collisionFrame1 += 1;
         if(ampl1 > 0){
@@ -64,34 +71,53 @@ function draw(){
         } else {
             ampl1 = 0
         }
+
+        if(kb.presses('w')){
+            player1.pos.y -= 2
+            player1.velocity.y -= 8
+            player1.velocity.x += 8*Math.sin(radians(player1.rotation))
+        }
         
-        player1.rotation = 5*ampl1*Math.sin(collisionFrame1/30)
+        
     } else {
-        player1.rotationLock = true
+        player1.rotationLock = false
+        if(frameCount - lastCollide1 > 5){
+            ampl1 += 0.5
+        }
+        //collisionFrame1 += 0.8
     }
 
+    console.log(player1.colliding(floor))
+
     if(player2.colliding(floor)){
-        player2.rotationLock = false
+        lastCollide2 = frameCount
+        player2.vel.y = 0
+        player2.rotationLock = true
         collisionFrame2 += 1;
         if(ampl2 > 0){
             ampl2 -= 0.03
         } else {
             ampl2 = 0
         }
-        
-        player2.rotation = -5*ampl2*Math.sin(collisionFrame2/30)
+
+        if(kb.presses('o')){
+            player2.pos.y -= 2
+            player2.velocity.y -= 8
+            player2.velocity.x += 8*Math.sin(radians(player2.rotation))
+        }
     } else {
-        player2.rotationLock = true
+        player2.rotationLock = false
+        if(frameCount - lastCollide2 > 5){
+            ampl2 += 0.5
+        }
+        
+        //collisionFrame2 += 0.8
     }
 
-    if(kb.presses('w')){
-        player1.velocity.y -= 5
-        player1.velocity.x += 5*Math.sin(radians(player1.rotation))
-    }
-    if(kb.presses('o')){
-        player2.velocity.y -= 5
-        player2.velocity.x += 5*Math.sin(radians(player2.rotation))
-    }
+
+    player1.rotation = 5*ampl1*Math.sin(collisionFrame1/30)
+    player2.rotation = -5*ampl2*Math.sin(collisionFrame2/30)
+    
     //player1head.rotateTowards(200, 400, 0.1, 0)
     
 }   
