@@ -86,7 +86,7 @@ function draw(){
             if(player1.rotation > 0){
                 collisionFrame1 = 0
             } else {
-                collisionFrame1 = Math.PI*30
+                collisionFrame1 = Math.PI*15 
             }
             ampl1 = abs(player1.rotation/5)
             ampl1 += min(0.1, max(2, ampl1)/50)
@@ -119,7 +119,7 @@ function draw(){
             if(player2.rotation < 0){
                 collisionFrame2 = 0
             } else {
-                collisionFrame2 = Math.PI*30
+                collisionFrame2 = Math.PI*15
             }
             ampl2 = abs(player2.rotation/5)
             ampl2 += min(0.1, max(2, ampl2)/50)
@@ -129,8 +129,8 @@ function draw(){
     }
 
 
-    player1.rotation = 5*ampl1*Math.cos(collisionFrame1/30)
-    player2.rotation = -5*ampl2*Math.cos(collisionFrame2/30)
+    player1.rotation = 5*ampl1*Math.cos(collisionFrame1/15)
+    player2.rotation = -5*ampl2*Math.cos(collisionFrame2/15)
     
     //player1head.rotateTowards(200, 400, 0.1, 0)
     
