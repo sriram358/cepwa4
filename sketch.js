@@ -1,4 +1,4 @@
-let player1body, player1head, player1, player2body, player2head, player2, floor, ampl1, ampl2, collisionFrame1, collisionFrame2, lastCollide1, lastCollide2, initRotation1, initRotation2
+let player1body, player1head, player1, player2body, player2head, player2, floor, ampl1, ampl2, collisionFrame1, collisionFrame2, lastCollide1, lastCollide2, initRotation1, initRotation2, wall1, wall2
 
 //let frameCount = 0;
 let changeFrame = -100;
@@ -12,7 +12,14 @@ function setup(){
     player1 = new Sprite(200, 550, 100)
     player2 = new Sprite(800, 550, 100)
     floor = new Sprite(600, 800, 1200, 4)
+    wall1 = new Sprite(0, 400, 4, 800)
+    wall2 = new Sprite(1200, 400, 4, 800)
     floor.collider = "static"
+    wall1.collider = "static"
+    wall2.collider = "static"
+    floor.visible = false
+    wall1.visible = false
+    wall2.visible = false
     player1.d = 100
     player2.d = 100
     player1.rotation = 0
@@ -23,6 +30,8 @@ function setup(){
     player2.rotationLock = true
     player1.friction = 1000
     player2.friction = 1000
+    player1.visible = false
+    player2.visible = false
     floor.friction = 100
     world.gravity.y = 20
     ampl1 = 1
@@ -81,7 +90,7 @@ function draw(){
         
     } else {
        
-        if(frameCount - lastCollide1 > 5){
+        if(frameCount - lastCollide1 > 2){
             player1.rotationLock = false
             if(player1.rotation > 0){
                 collisionFrame1 = 0
@@ -94,7 +103,7 @@ function draw(){
         //collisionFrame1 += 0.8
     }
 
-    console.log(player1.colliding(floor))
+    //console.log(player1.colliding(floor))
 
     if(player2.colliding(floor)){
         lastCollide2 = frameCount
@@ -114,7 +123,7 @@ function draw(){
         }
     } else {
         
-        if(frameCount - lastCollide2 > 5){
+        if(frameCount - lastCollide2 > 2){
             player2.rotationLock = false
             if(player2.rotation < 0){
                 collisionFrame2 = 0
