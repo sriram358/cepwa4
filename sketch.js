@@ -1,6 +1,6 @@
 let player1body, player1head, player1, player2body, player2head, player2, floor, ampl1, ampl2, collisionFrame1, collisionFrame2, lastCollide1, lastCollide2, initRotation1, initRotation2, wall1, wall2, table
 
-let backarm1, forearm1, armjoint1, bodyjoint1, armjoint2
+let backarm1, backarm2, forearm1, armjoint1, bodyjoint1, armjoint2, ball
 //let frameCount = 0;
 let changeFrame = -100;
 let rotateDire1 = "left"
@@ -17,13 +17,18 @@ function setup(){
     wall1 = new Sprite(0, 400, 4, 800)
     wall2 = new Sprite(1200, 400, 4, 800)
     table = new Sprite(600, 750, 500, 150)
+    ball = new Sprite(800, 500, 20)
     
     
     backarm1 = new Sprite(100, 400, 30, 100)
     backarm1.offset.y = -50
+    backarm2 = new Sprite(1000, 400, 30, 100)
+    backarm2.offset.y = -50
     forearm1 = new Sprite(100, 480, 30, 100)
     forearm1.offset.y = 50
+    ball.collider = "dynamic"
     backarm1.collider = "kinematic"
+    backarm2.collider = "kinematic"
     forearm1.collider = "kinematic"
     //bodyjoint1 = new GlueJoint(backarm1, player1)
     //armjoint1 = new GlueJoint(backarm1, forearm1)
@@ -34,6 +39,7 @@ function setup(){
     player1.collider = "dynamic"
     player2.collider = "dynamic"
     backarm1.rotation = 180
+    backarm2.rotation = 180
 
     floor.visible = false
     wall1.visible = false
@@ -62,6 +68,8 @@ function setup(){
     collisionFrame2 = 0
     lastCollide1 = 0
     lastCollide2 = 0
+    ball.velocity.x = -10
+    ball.bounciness = 0.7
 }
 
 function drawPlayer1(){
@@ -90,12 +98,20 @@ function renderArm1(){
     backarm1.pos.y = player1.pos.y - 180*Math.cos(radians(player1.rotation))
 }
 
+function renderArm2(){
+    backarm2.pos.x = player2.pos.x + 180*Math.sin(radians(player2.rotation))
+    backarm2.pos.y = player2.pos.y - 180*Math.cos(radians(player2.rotation))
+}
+
 function draw(){
     background(200)
     drawPlayer1()
     drawPlayer2()
     renderArm1()
+    renderArm2()
     // Fixes bounce bug in planck (inherent of p5play sadly)
+
+    
 
     if(kb.pressing('w')){
         if(armRotation1 > 0 + player1.rotation){
@@ -118,6 +134,34 @@ function draw(){
         }
 
         backarm1.rotation = armRotation1
+        
+        
+    }
+
+    if(kb.pressing('o')){
+       
+
+        if(armRotation2 < 360 + player2.rotation){
+            armRotation2 = min(360 + player2.rotation, armRotation2 + 10)
+            //armRotation1 += 5
+        } else {
+            armRotation2 = 360 + player2.rotation
+        }
+
+        backarm2.rotation = armRotation2
+
+    } else {
+        
+        if(armRotation2 > 180 + player2.rotation){
+            armRotation2 = max(180 + player2.rotation, armRotation2 - 10)
+           //wwbackarm1.rotation -= 5
+        } else {
+            armRotation2 = armRotation2
+        }
+
+        backarm2.rotation = armRotation2
+        
+        
         
         
     }
