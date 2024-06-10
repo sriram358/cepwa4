@@ -1,4 +1,4 @@
-let player1body, player1head, player1, player2body, player2head, player2, floor, ampl1, ampl2, collisionFrame1, collisionFrame2, lastCollide1, lastCollide2, initRotation1, initRotation2, wall1, wall2, table
+let player1body, player1head, player1, player2body, player2head, player2, floor, ampl1, ampl2, collisionFrame1, collisionFrame2, lastCollide1, lastCollide2, initRotation1, initRotation2, wall1, wall2, table, net
 
 let backarm1, backarm2, forearm1, armjoint1, bodyjoint1, armjoint2, ball
 //let frameCount = 0;
@@ -16,7 +16,8 @@ function setup(){
     floor = new Sprite(600, 800, 1200, 4)
     wall1 = new Sprite(0, 400, 4, 800)
     wall2 = new Sprite(1200, 400, 4, 800)
-    table = new Sprite(600, 750, 500, 150)
+    table = new Sprite(600, 800, 500, 150)
+    net = new Sprite(600, 700, 20, 50)
     ball = new Sprite(800, 500, 20)
     
     
@@ -30,6 +31,7 @@ function setup(){
     backarm1.collider = "kinematic"
     backarm2.collider = "kinematic"
     forearm1.collider = "kinematic"
+    net.collider = "static"
     //bodyjoint1 = new GlueJoint(backarm1, player1)
     //armjoint1 = new GlueJoint(backarm1, forearm1)
     floor.collider = "kinematic"
@@ -112,6 +114,9 @@ function draw(){
     // Fixes bounce bug in planck (inherent of p5play sadly)
 
     
+    if(ball.colliding(backarm1)){
+        ball.vel.x = 10
+    }
 
     if(kb.pressing('w')){
         if(armRotation1 > 0 + player1.rotation){
@@ -121,6 +126,7 @@ function draw(){
             armRotation1 = armRotation1
         }
 
+        //backarm1.rotateTo((armRotation1%360)-180, 1) 
         backarm1.rotation = armRotation1
 
     } else {
@@ -133,6 +139,7 @@ function draw(){
             armRotation1 = 180 + player1.rotation
         }
 
+        //backarm1.rotateTo((armRotation1%360)-180, 1) 
         backarm1.rotation = armRotation1
         
         
