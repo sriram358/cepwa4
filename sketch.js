@@ -114,8 +114,12 @@ function draw(){
     // Fixes bounce bug in planck (inherent of p5play sadly)
 
     
-    if(ball.colliding(backarm1) || ball.colliding(backarm2)){
+    if(ball.colliding(backarm1)){
         ball.vel.x = 10
+    } 
+    
+    if(ball.colliding(backarm2)){
+        ball.vel.x = -10
     }
     
 
