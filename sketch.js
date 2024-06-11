@@ -71,7 +71,7 @@ function setup(){
     lastCollide1 = 0
     lastCollide2 = 0
     ball.velocity.x = -10
-    ball.bounciness = 0.7
+    ball.bounciness = 0.9
 }
 
 function drawPlayer1(){
@@ -117,8 +117,14 @@ function draw(){
     if(ball.colliding(backarm1)){
         ball.vel.x = 10
     }
+    
 
     if(kb.pressing('w')){
+        if(player1.pos.y > 760){
+            player1.pos.y -= 2
+            player1.velocity.y -= 2
+            player1.velocity.x += 2*Math.sin(radians(player1.rotation))
+        }
         if(armRotation1 > 0 + player1.rotation){
             armRotation1 = max(0 + player1.rotation, armRotation1 - 10)
            //wwbackarm1.rotation -= 5
@@ -146,7 +152,11 @@ function draw(){
     }
 
     if(kb.pressing('o')){
-       
+        if(player2.pos.y > 760){
+            player2.pos.y -= 2
+            player2.velocity.y -= 2
+            player2.velocity.x += 2*Math.sin(radians(player2.rotation))
+        }
 
         if(armRotation2 < 360 + player2.rotation){
             armRotation2 = min(360 + player2.rotation, armRotation2 + 10)
@@ -189,11 +199,11 @@ function draw(){
             ampl1 = 0
         }
 
-        if(kb.presses('w')){
-            player1.pos.y -= 2
-            player1.velocity.y -= 8
-            player1.velocity.x += 8*Math.sin(radians(player1.rotation))
-        }
+        // if(kb.presses('w')){
+        //     player1.pos.y -= 2
+        //     player1.velocity.y -= 8
+        //     player1.velocity.x += 8*Math.sin(radians(player1.rotation))
+        // }
         
         
         
@@ -227,11 +237,11 @@ function draw(){
             ampl2 = 0
         }
 
-        if(kb.presses('o')){
-            player2.pos.y -= 2
-            player2.velocity.y -= 8
-            player2.velocity.x += 8*Math.sin(radians(player2.rotation))
-        }
+        // if(kb.presses('o')){
+        //     player2.pos.y -= 2
+        //     player2.velocity.y -= 8
+        //     player2.velocity.x += 8*Math.sin(radians(player2.rotation))
+        // }
     } else {
         player2.velocity.y += 0.1
         if(frameCount - lastCollide2 > 2){
