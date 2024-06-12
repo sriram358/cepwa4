@@ -1,7 +1,7 @@
 let player1body, player1head, player1, player2body, player2head, player2, floor, ampl1, ampl2, collisionFrame1, collisionFrame2, lastCollide1, lastCollide2, initRotation1, initRotation2, wall1, wall2, table, net
 
 let backarm1, backarm2, forearm1, armjoint1, bodyjoint1, armjoint2, ball
-let pixelFont
+let pixelFont, tableSound, paddleSound, pianoSound
 let score1 = 0, score2 = 0
 let ballLastCollide = "NONE"
 let ballPosList = []
@@ -13,9 +13,13 @@ let rotateDire2 = "right"
 let scored = "NONE"
 let armRotation1 = 180
 let armRotation2 = 180
+let songPlaying = false
 
 function preload(){
     pixelFont = loadFont("VT323-Regular.ttf")
+    tableSound = loadSound("table.mp3")
+    paddleSound = loadSound("paddle.mp3")
+    pianoSound = loadSound("piano.mp3")
 }
 
 function setup(){
@@ -192,6 +196,10 @@ function reset(){
 }
 
 function draw(){
+    if(!songPlaying){
+        songPlaying = true
+        pianoSound.play()
+    }
     textFont(pixelFont, 150)
     if(frameCount - roundFrame < 60){
         fill(200)
@@ -236,11 +244,14 @@ function draw(){
 
         if(ball.collides(backarm1)){
             ballLastCollide = "LPADDLE"
+            paddleSound.play()
         } else if (ball.collides(backarm2)){
             ballLastCollide = "RPADDLE"
+            paddleSound.play()
         }
 
         if(ball.collides(table)){
+            tableSound.play()
             if(ball.pos.x < 600){
                 if(ballLastCollide == "LEFT" || ballLastCollide == "LPADDLE"){
                     score2 += 1
