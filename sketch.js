@@ -198,7 +198,7 @@ function reset(){
 function draw(){
     if(!songPlaying){
         songPlaying = true
-        pianoSound.play()
+        //pianoSound.play()
     }
     textFont(pixelFont, 150)
     if(frameCount - roundFrame < 60){
