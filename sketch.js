@@ -5,11 +5,12 @@ let pixelFont
 let score1 = 0, score2 = 0
 let ballLastCollide = "NONE"
 let ballPosList = []
-let roundFrame = -100
+let roundFrame = -1000
 //let frameCount = 0;
-let changeFrame = -100;
+let changeFrame = -1000;
 let rotateDire1 = "left"
 let rotateDire2 = "right"
+let scored = "NONE"
 let armRotation1 = 180
 let armRotation2 = 180
 
@@ -191,15 +192,38 @@ function reset(){
 }
 
 function draw(){
+    textFont(pixelFont, 150)
     if(frameCount - roundFrame < 60){
-        console.log("print")
-    } else if (frameCount - roundFrame >= 60 && frameCount - roundFrame <= 90){
+        fill(200)
+        noStroke()
+        rect(0, 0, 1200, 400)
+        fill('red')
+        if(scored == "LEFT"){
+            text(score1-1, 200 , 100 - min(20, (frameCount - roundFrame))*5)
+            text(score1, 200 , 200 - min(20, (frameCount - roundFrame))*5)
+        } else {
+            text(score1, 200 , 100)
+        }
+        
+        fill('blue')
+        if(scored == "RIGHT"){
+            text(score2-1, 1000 , 100 - min(20, (frameCount - roundFrame))*5)
+            text(score2, 1000 , 200 - min(20, (frameCount - roundFrame))*5)
+        } else {
+            text(score2, 1000 , 100)
+        }
+
+        fill(200)
+        noStroke()
+        rect(0, 150, 1200, 200)
+        
+    } else if (frameCount - roundFrame >= 60 && frameCount - roundFrame <= 62){
         reset()
     } else {
         noStroke()
         background(200)
         fill('red')
-        textFont(pixelFont, 150)
+        
         text(score1, 200, 100)
         fill('blue')
         
@@ -220,6 +244,7 @@ function draw(){
             if(ball.pos.x < 600){
                 if(ballLastCollide == "LEFT" || ballLastCollide == "LPADDLE"){
                     score2 += 1
+                    scored = "RIGHT"
                     roundFrame = frameCount
                     //reset()
                 } else {
@@ -229,6 +254,7 @@ function draw(){
             } else {
                 if(ballLastCollide == "RIGHT" || ballLastCollide == "RPADDLE"){
                     score1 += 1
+                    scored = "LEFT"
                     roundFrame = frameCount
                     //reset()
                 } else {
@@ -241,9 +267,13 @@ function draw(){
             if(ball.pos.x < 600){
                 if(ballLastCollide == "LEFT" || ballLastCollide == "LPADDLE"){
                     score2 += 1
+                    scored = "RIGHT"
+                    
                     //reset()
                 } else {
                     score1 += 1
+                    scored = "LEFT"
+                    
                 }
                 
                 roundFrame = frameCount
@@ -251,9 +281,11 @@ function draw(){
             } else {
                 if(ballLastCollide == "RIGHT" || ballLastCollide == "RPADDLE"){
                     score1 += 1
+                    scored = "LEFT"
                     //reset()
                 } else {
                     score2 += 1
+                    scored = "RIGHT"
                 }
                 
                 roundFrame = frameCount
