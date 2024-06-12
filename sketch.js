@@ -339,7 +339,7 @@ function draw(){
 
         } 
 
-        if(kb.pressing('i')){
+        if(kb.pressing('o')){
             if(armRotation2 < 360){
                 
                 backarm2.rotate(min(10, Math.abs(armRotation2 - (360))), 10)
@@ -380,8 +380,8 @@ function draw(){
             } 
         }
 
-        if(kb.pressing('o')){
-            if(player2.pos.y > 750 && kb.pressing('o') < 40){
+        if(kb.pressing('i')){
+            if(player2.pos.y > 750 && kb.pressing('i') < 40){
                 player2.pos.y -= 2
                 player2.velocity.y -= 3
                 player2.velocity.x += 2*Math.sin(radians(player2.rotation))
