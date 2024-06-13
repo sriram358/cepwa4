@@ -14,6 +14,7 @@ let scored = "NONE"
 let armRotation1 = 180
 let armRotation2 = 180
 let songPlaying = false
+let player1shot = "NONE", player2shot = "NONE"
 
 function preload(){
     pixelFont = loadFont("Overpass.ttf")
@@ -31,7 +32,7 @@ function setup(){
     floor = new Sprite(600, 800, 1200, 4)
     wall1 = new Sprite(0, 400, 4, 800)
     wall2 = new Sprite(1200, 400, 4, 800)
-    table = new Sprite(600, 750, 600, 150)
+    table = new Sprite(600, 750, 550, 150)
     net = new Sprite(600, 660, 10, 30)
     ball = new Sprite(800, 500, 20)
     
@@ -92,7 +93,7 @@ function setup(){
     ball.velocity.x = -15
     ball.bounciness = 0.85
     ball.mass = 600
-    ball.drag = 0.5 
+    ball.drag = 0.5
     textAlign(CENTER)
 }
 
@@ -198,7 +199,7 @@ function reset(){
 function draw(){
     if(!songPlaying){
         songPlaying = true
-        //pianoSound.play()
+        pianoSound.play()
     }
     textFont(pixelFont, 120)
     if(frameCount - roundFrame < 60){
@@ -322,6 +323,24 @@ function draw(){
         
         //console.log(backarm1.rotation, player1.rotation)
 
+        if(backarm1.rotation == 90 && player1shot == "NORM"){
+            backarm1.rotate(90, 10)
+            player1shot = "NONE"
+        }
+
+        if(backarm1.rotation == 180 && player1shot == "SMASH"){
+            player1shot = "NONE"
+        }
+
+        if(backarm2.rotation == -90 && player2shot == "NORM"){
+            backarm2.rotate(-90, 10)
+            player2shot = "NONE"
+        }
+
+        if(abs(backarm2.rotation) == 180 && player2shot == "SMASH"){
+            player2shot = "NONE"
+        }
+
         if(player1.colliding(table)){
             player1.rotationLock = true
             ampl1 += 0.03
@@ -332,9 +351,13 @@ function draw(){
             ampl2 += 0.03
         }
 
-        if(kb.pressing('e')){
+        if(kb.presses('e')){
             if(armRotation1 > 0){
-                backarm1.rotate(-min(10, Math.abs(armRotation1)), 10)
+                backarm1.rotation = 180
+                backarm1.rotate(-90, 10)
+                player1shot = "NORM"
+                
+                
                 if(backarm1.rotation <= -90){
                     armRotation1 = backarm1.rotation + 360
                 } else {
@@ -351,30 +374,65 @@ function draw(){
                 backarm1.rotation = armRotation1
             } 
             
-        } else {
-            if(armRotation1 < 180){
-                
-                backarm1.rotate(min(10, Math.abs(armRotation1 - (180))), 10)
-                if(backarm1.rotation <= -90){
-                    armRotation1 = backarm1.rotation + 360
-                } else {
-                    armRotation1 = backarm1.rotation
-                }
+        } 
+
+        if(kb.presses('r')){
+            
+            backarm1.rotation = 0
+            backarm1.rotate(180, 10)
+            player1shot = "SMASH"
+            
+            
+            if(backarm1.rotation <= -90){
+                armRotation1 = backarm1.rotation + 360
             } else {
-                armRotation1 = 180
-                backarm1.rotation = armRotation1
-                if(backarm1.rotation <= -90){
-                    armRotation1 = backarm1.rotation + 360
-                } else {
-                    armRotation1 = backarm1.rotation
-                }
-            } 
-        }
-        if(kb.pressing('w')){
-            if(player1.pos.y > 750 && kb.pressing('w') < 40){
+                armRotation1 = backarm1.rotation
+            }
+                
+            
+            
+        } 
+        
+        if(kb.presses('i')){
+            
+            backarm2.rotation = -180
+            backarm2.rotate(90, 10)
+            player2shot = "NORM"
+            
+            
+            if(backarm2.rotation <= -90){
+                armRotation2 = backarm2.rotation + 360
+            } else {
+                armRotation2 = backarm2.rotation
+            }
+                
+                
+           
+            
+        } 
+
+        if(kb.presses('u')){
+            
+            backarm2.rotation = 0
+            backarm2.rotate(-180, 10)
+            player2shot = "SMASH"
+            
+            
+            if(backarm2.rotation <= -90){
+                armRotation2 = backarm2.rotation + 360
+            } else {
+                armRotation2 = backarm2.rotation
+            }
+                
+            
+            
+        } 
+
+        if(kb.pressing('s')){
+            if(player1.pos.y > 750 && kb.pressing('s') < 40){
                 player1.pos.y -= 2 
-                player1.velocity.y -= 3
-                player1.velocity.x += 2*Math.sin(radians(player1.rotation))
+                player1.velocity.y -= 3.5
+                player1.velocity.x += 3*Math.sin(radians(player1.rotation))
             }
 
             
@@ -382,52 +440,13 @@ function draw(){
 
         } 
 
-        if(kb.pressing('o')){
-            if(armRotation2 < 360){
-                
-                backarm2.rotate(min(10, Math.abs(armRotation2 - (360))), 10)
-                if(backarm2.rotation <= 90){
-                    armRotation2 = backarm2.rotation + 360
-                } else {
-                    armRotation2 = backarm2.rotation
-                }
-            } else {
-                armRotation2 = 360
-                backarm2.rotation = armRotation2
-                if(backarm2.rotation <= 90){
-                    armRotation2 = backarm2.rotation + 360
-                } else {
-                    armRotation2 = backarm2.rotation
-                }
-            } 
+        
 
-            //backarm2.rotation = armRotation2
-        } else {
-            if(armRotation2 > 180){
-                backarm2.rotate(-min(10, Math.abs(armRotation2 - (180))), 10)
-                if(backarm2.rotation <= 90){
-                    armRotation2 = backarm2.rotation + 360
-                } else {
-                    armRotation2 = backarm2.rotation
-                }
-                
-                
-            } else {
-                if(backarm2.rotation <= 90){
-                    armRotation2 = backarm2.rotation + 360
-                } else {
-                    armRotation2 = backarm2.rotation
-                }
-                armRotation2 = 180
-                backarm2.rotation = armRotation2
-            } 
-        }
-
-        if(kb.pressing('i')){
-            if(player2.pos.y > 750 && kb.pressing('i') < 40){
+        if(kb.pressing('l')){
+            if(player2.pos.y > 750 && kb.pressing('l') < 40){
                 player2.pos.y -= 2
-                player2.velocity.y -= 3
-                player2.velocity.x += 2*Math.sin(radians(player2.rotation))
+                player2.velocity.y -= 3.5
+                player2.velocity.x += 3*Math.sin(radians(player2.rotation))
             }
 
             // if(armRotation2 < 360 + player2.rotation){
