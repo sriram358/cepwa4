@@ -200,7 +200,7 @@ function draw(){
         songPlaying = true
         //pianoSound.play()
     }
-    textFont(pixelFont, 150)
+    textFont(pixelFont, 120)
     if(frameCount - roundFrame < 60){
         fill(200)
         noStroke()
