@@ -16,7 +16,7 @@ let armRotation2 = 180
 let songPlaying = false
 
 function preload(){
-    pixelFont = loadFont("VT323-Regular.ttf")
+    pixelFont = loadFont("Overpass.ttf")
     tableSound = loadSound("table.mp3")
     paddleSound = loadSound("paddle.mp3")
     pianoSound = loadSound("piano.mp3")
@@ -83,8 +83,8 @@ function setup(){
     // player2.addCollider(0,-125, 50, 200)
     floor.friction = 100
     world.gravity.y = 35
-    ampl1 = 1
-    ampl2 = 1
+    ampl1 = 3
+    ampl2 = 3
     collisionFrame1 = 0
     collisionFrame2 = 0
     lastCollide1 = 0
@@ -181,8 +181,8 @@ function reset(){
     player1.visible = false
     player2.visible = false
     ball.visible = false
-    ampl1 = 1
-    ampl2 = 1
+    ampl1 = 3
+    ampl2 = 3
     collisionFrame1 = 0
     collisionFrame2 = 0
     lastCollide1 = 0
@@ -466,10 +466,10 @@ function draw(){
             player1.rotationLock = true
             
             collisionFrame1 += 1;
-            if(ampl1 > 2){
+            if(ampl1 > 3){
                 ampl1 -= 0.03
             } else {
-                ampl1 = 2
+                ampl1 = 3
             }
 
             // if(kb.presses('w')){
@@ -489,7 +489,7 @@ function draw(){
                 if(player1.rotation > 0){
                     collisionFrame1 = 0
                 } else {
-                    collisionFrame1 = Math.PI*10 
+                    collisionFrame1 = Math.PI*8
                 }
                 ampl1 = abs(player1.rotation/5)
                 ampl1 += min(0.1, max(2, ampl1)/20)
@@ -504,10 +504,10 @@ function draw(){
             player2.vel.y = 0
             player2.rotationLock = true
             collisionFrame2 += 1;
-            if(ampl2 > 2){
+            if(ampl2 > 3){
                 ampl2 -= 0.03
             } else {
-                ampl2 = 2
+                ampl2 = 3
             }
 
             // if(kb.presses('o')){
@@ -522,7 +522,7 @@ function draw(){
                 if(player2.rotation < 0){
                     collisionFrame2 = 0
                 } else {
-                    collisionFrame2 = Math.PI*10
+                    collisionFrame2 = Math.PI*8
                 }
                 ampl2 = abs(player2.rotation/5)
                 ampl2 += min(0.1, max(2, ampl2)/20)
@@ -534,8 +534,8 @@ function draw(){
         
 
 
-        player1.rotation = 5*ampl1*Math.cos(collisionFrame1/10)
-        player2.rotation = -5*ampl2*Math.cos(collisionFrame2/10)
+        player1.rotation = 5*ampl1*Math.cos(collisionFrame1/8)
+        player2.rotation = -5*ampl2*Math.cos(collisionFrame2/8)
         
         //player1head.rotateTowards(200, 400, 0.1, 0)
     }
