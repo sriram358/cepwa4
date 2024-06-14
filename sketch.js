@@ -261,9 +261,15 @@ function draw(){
         if(ball.collides(backarm1)){
             ballLastCollide = "LPADDLE"
             paddleSound.play()
+            if(ball.vel.y < -max(5, ((295 - backarm1.pos.x)/295)*15)){
+                ball.vel.y = -max(5, ((295 - backarm1.pos.x)/295)*15)
+            }
         } else if (ball.collides(backarm2)){
             ballLastCollide = "RPADDLE"
             paddleSound.play()
+            if(ball.vel.y < -max(5, ((backarm2.pos.x - 1065)/295)*15)){
+                ball.vel.y = -max(5, ((backarm2.pos.x - 1065)/295)*15)
+            }
         }
 
         if(ball.collides(table)){
@@ -392,7 +398,7 @@ function draw(){
             ampl2 += 0.03
         }
 
-        if(kb.presses('e')){
+        if(kb.presses('d')){
             if(armRotation1 > 0){
                 backarm1.rotation = 180
                 backarm1.rotate(-90, 10)
@@ -417,7 +423,7 @@ function draw(){
             
         } 
 
-        if(kb.presses('r')){
+        if(kb.presses('e')){
             
             backarm1.rotation = 0
             backarm1.rotate(180, 10)
@@ -434,7 +440,7 @@ function draw(){
             
         } 
         
-        if(kb.presses('i')){
+        if(kb.presses('j')){
             
             backarm2.rotation = -180
             backarm2.rotate(90, 10)
@@ -452,7 +458,7 @@ function draw(){
             
         } 
 
-        if(kb.presses('u')){
+        if(kb.presses('i')){
             
             backarm2.rotation = 0
             backarm2.rotate(-180, 10)
@@ -469,7 +475,7 @@ function draw(){
             
         } 
 
-        if(kb.pressing('s')){
+        if(kb.pressing('w')){
             if(player1.pos.y > 750 && kb.pressing('s') < 40){
                 player1.pos.y -= 2 
                 player1.velocity.y -= 3.5
@@ -483,7 +489,7 @@ function draw(){
 
         
 
-        if(kb.pressing('l')){
+        if(kb.pressing('o')){
             if(player2.pos.y > 750 && kb.pressing('l') < 40){
                 player2.pos.y -= 2
                 player2.velocity.y -= 3.5
