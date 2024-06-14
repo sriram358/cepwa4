@@ -202,7 +202,16 @@ function draw(){
         pianoSound.play()
     }
     textFont(pixelFont, 120)
+    // drawBall()
     if(frameCount - roundFrame < 60){
+        drawBall()
+        if(ball.collides(backarm1)){
+            paddleSound.play()
+        } else if (ball.collides(backarm2)){
+            paddleSound.play()
+        } else if(ball.collides(table) || ball.collides(floor)){
+            tableSound.play()
+        }
         fill(200)
         noStroke()
         rect(0, 0, 1200, 400)
@@ -231,6 +240,7 @@ function draw(){
     } else {
         noStroke()
         background(200)
+        drawBall()
         fill('red')
         
         text(score1, 200, 100)
@@ -241,7 +251,12 @@ function draw(){
         drawPlayer2()
         renderArm1()
         renderArm2()
-        drawBall()
+        //drawBall()
+
+        textFont(pixelFont, 30)
+        fill('black')
+
+        text(`Ball Speed: ${Math.floor(ball.vel.x)}`, 600, 600)
 
         if(ball.collides(backarm1)){
             ballLastCollide = "LPADDLE"
@@ -318,8 +333,9 @@ function draw(){
         // if(ball.colliding(backarm2)){
         //     ball.vel.x = -10
         // }
-        //ball.rotationSpeed = 50
-        ball.vel.limit(20)
+        ////ball.rotationSpeed = 50
+        ball.vel.limit(25)
+        
         if(ball.vel.x > 0 && ball.vel.x < 5){
             ball.vel.x = 5
         }
@@ -327,6 +343,24 @@ function draw(){
         if(ball.vel.x < 0 && ball.vel.x > -5){
             ball.vel.x = -5
         }
+
+        if(ball.vel.y > 15){
+            ball.vel.y = 15
+        }
+
+        if(ball.vel.y < -15){
+            ball.vel.y = -15
+        }
+
+        if(ball.vel.x > 20){
+            ball.vel.x = 20
+        }
+
+        if(ball.vel.x < -20){
+            ball.vel.x = -20
+        }
+
+
         
         //console.log(backarm1.rotation, player1.rotation)
 
