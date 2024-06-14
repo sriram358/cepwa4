@@ -334,7 +334,7 @@ function draw(){
         //     ball.vel.x = -10
         // }
         ////ball.rotationSpeed = 50
-        ball.vel.limit(202)
+        ball.vel.limit(20)
         
         if(ball.vel.x > 0 && ball.vel.x < 5){
             ball.vel.x = 5
