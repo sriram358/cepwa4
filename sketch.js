@@ -32,7 +32,7 @@ function setup(){
     floor = new Sprite(600, 800, 1200, 4)
     wall1 = new Sprite(0, 400, 4, 800)
     wall2 = new Sprite(1200, 400, 4, 800)
-    table = new Sprite(600, 750, 550, 150)
+    table = new Sprite(600, 750, 625, 150)
     net = new Sprite(600, 660, 10, 30)
     ball = new Sprite(800, 500, 20)
     
@@ -336,12 +336,12 @@ function draw(){
         ////ball.rotationSpeed = 50
         ball.vel.limit(20)
         
-        if(ball.vel.x > 0 && ball.vel.x < 5){
-            ball.vel.x = 5
+        if(ball.vel.x > 0 && ball.vel.x < 10){
+            ball.vel.x = 10
         }
 
-        if(ball.vel.x < 0 && ball.vel.x > -5){
-            ball.vel.x = -5
+        if(ball.vel.x < 0 && ball.vel.x > -10){
+            ball.vel.x = -10
         }
 
         // if(ball.vel.y > 15){
