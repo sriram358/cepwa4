@@ -320,6 +320,13 @@ function draw(){
         // }
         //ball.rotationSpeed = 50
         ball.vel.limit(20)
+        if(ball.vel.x > 0 && ball.vel.x < 5){
+            ball.vel.x = 5
+        }
+
+        if(ball.vel.x < 0 && ball.vel.x > -5){
+            ball.vel.x = -5
+        }
         
         //console.log(backarm1.rotation, player1.rotation)
 
