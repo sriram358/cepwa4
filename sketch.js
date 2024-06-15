@@ -15,6 +15,7 @@ let armRotation1 = 180
 let armRotation2 = 180
 let songPlaying = false
 let player1shot = "NONE", player2shot = "NONE"
+let trailList = []
 
 function preload(){
     pixelFont = loadFont("Overpass.ttf")
@@ -196,7 +197,393 @@ function reset(){
     textAlign(CENTER)
 }
 
+function renderRound(){
+    noStroke()
+    background(200)
+    drawBall()
+    //renderBallTrail()
+    fill('red')
+    
+    text(score1, 200, 100)
+    fill('blue')
+    
+    text(score2, 1000, 100)
+    drawPlayer1()
+    drawPlayer2()
+    renderArm1()
+    renderArm2()
+    //drawBall()
+
+    textFont(pixelFont, 30)
+    fill('black')
+
+    text(`Ball Speed: ${Math.floor(ball.vel.mag())}`, 600, 600)
+
+    trailList.push(new Trail(ball.pos.x, ball.pos.y, ball.vel.x, ball.vel.y))
+
+    for(let i = 0; i < trailList.length; i++){
+        trailList[i].age -= 1
+        if(trailList[i].age <= 0){
+            trailList.splice(i, 1)
+        } else {
+            trailList[i].draw()
+        }
+    }
+
+    if(ball.collides(backarm1)){
+        ballLastCollide = "LPADDLE"
+        paddleSound.play()
+        if(ball.vel.y < -max(7, ((295 - backarm1.pos.x)/295)*15)){
+            ball.vel.y = -max(7, ((295 - backarm1.pos.x)/295)*15)
+        }
+    } else if (ball.collides(backarm2)){
+        ballLastCollide = "RPADDLE"
+        paddleSound.play()
+        if(ball.vel.y < -max(7, ((backarm2.pos.x - 1065)/295)*15)){
+            ball.vel.y = -max(7, ((backarm2.pos.x - 1065)/295)*15)
+        }
+    }
+
+    if(ball.collides(table)){
+        tableSound.play()
+        if(ball.pos.x < 600){
+            if(ballLastCollide == "LEFT" || ballLastCollide == "LPADDLE"){
+                score2 += 1
+                scored = "RIGHT"
+                roundFrame = frameCount
+                //reset()
+            } else {
+                ballLastCollide = "LEFT"
+            }
+            
+        } else {
+            if(ballLastCollide == "RIGHT" || ballLastCollide == "RPADDLE"){
+                score1 += 1
+                scored = "LEFT"
+                roundFrame = frameCount
+                //reset()
+            } else {
+                ballLastCollide = "RIGHT"
+            }
+        }
+    }
+
+    if(ball.collides(floor)){
+        if(ball.pos.x < 600){
+            if(ballLastCollide == "LEFT" || ballLastCollide == "LPADDLE"){
+                score2 += 1
+                scored = "RIGHT"
+                
+                //reset()
+            } else {
+                score1 += 1
+                scored = "LEFT"
+                
+            }
+            
+            roundFrame = frameCount
+            //reset()
+        } else {
+            if(ballLastCollide == "RIGHT" || ballLastCollide == "RPADDLE"){
+                score1 += 1
+                scored = "LEFT"
+                //reset()
+            } else {
+                score2 += 1
+                scored = "RIGHT"
+            }
+            
+            roundFrame = frameCount
+        }
+    }
+    
+
+    
+    
+        
+    // Fixes bounce bug in planck (inherent of p5play sadly)
+
+    
+    // if(ball.colliding(backarm1)){
+    //     ball.vel.x = 10
+    // } 
+    
+    // if(ball.colliding(backarm2)){
+    //     ball.vel.x = -10
+    // }
+    ////ball.rotationSpeed = 50
+    ball.vel.limit(20)
+    
+    if(ball.vel.x > 0 && ball.vel.x < 10){
+        ball.vel.x = 10
+    }
+
+    if(ball.vel.x < 0 && ball.vel.x > -10){
+        ball.vel.x = -10
+    }
+
+    // if(ball.vel.y > 15){
+    //     ball.vel.y = 15
+    // }
+
+    // if(ball.vel.y < -15){
+    //     ball.vel.y = -15
+    // }
+
+    // if(ball.vel.x > 20){
+    //     ball.vel.x = 20
+    // }
+
+    // if(ball.vel.x < -20){
+    //     ball.vel.x = -20
+    // }
+
+
+    
+    //console.log(backarm1.rotation, player1.rotation)
+
+    if(backarm1.rotation == 90 && player1shot == "NORM"){
+        backarm1.rotate(90, 10)
+        player1shot = "NONE"
+    }
+
+    if(backarm1.rotation == 180 && player1shot == "SMASH"){
+        player1shot = "NONE"
+    }
+
+    if(backarm2.rotation == -90 && player2shot == "NORM"){
+        backarm2.rotate(-90, 10)
+        player2shot = "NONE"
+    }
+
+    if(abs(backarm2.rotation) == 180 && player2shot == "SMASH"){
+        player2shot = "NONE"
+    }
+
+    if(player1.colliding(table)){
+        player1.rotationLock = true
+        ampl1 += 0.03
+    }
+
+    if(player2.colliding(table)){
+        player2.rotationLock = true
+        ampl2 += 0.03
+    }
+
+    if(kb.presses('d')){
+        if(armRotation1 > 0){
+            backarm1.rotation = 180
+            backarm1.rotate(-90, 10)
+            player1shot = "NORM"
+            
+            
+            if(backarm1.rotation <= -90){
+                armRotation1 = backarm1.rotation + 360
+            } else {
+                armRotation1 = backarm1.rotation
+            }
+            
+            
+        } else {
+            if(backarm1.rotation <= -90){
+                armRotation1 = backarm1.rotation + 360
+            } else {
+                armRotation1 = backarm1.rotation
+            }
+            backarm1.rotation = armRotation1
+        } 
+        
+    } 
+
+    if(kb.presses('e')){
+        
+        backarm1.rotation = 0
+        backarm1.rotate(180, 10)
+        player1shot = "SMASH"
+        
+        
+        if(backarm1.rotation <= -90){
+            armRotation1 = backarm1.rotation + 360
+        } else {
+            armRotation1 = backarm1.rotation
+        }
+            
+        
+        
+    } 
+    
+    if(kb.presses('j')){
+        
+        backarm2.rotation = -180
+        backarm2.rotate(90, 10)
+        player2shot = "NORM"
+        
+        
+        if(backarm2.rotation <= -90){
+            armRotation2 = backarm2.rotation + 360
+        } else {
+            armRotation2 = backarm2.rotation
+        }
+            
+            
+        
+        
+    } 
+
+    if(kb.presses('i')){
+        
+        backarm2.rotation = 0
+        backarm2.rotate(-180, 10)
+        player2shot = "SMASH"
+        
+        
+        if(backarm2.rotation <= -90){
+            armRotation2 = backarm2.rotation + 360
+        } else {
+            armRotation2 = backarm2.rotation
+        }
+            
+        
+        
+    } 
+
+    if(kb.pressing('w')){
+        if(player1.pos.y > 750 && kb.pressing('s') < 40){
+            player1.pos.y -= 2 
+            player1.velocity.y -= 3.5
+            player1.velocity.x += 3*Math.sin(radians(player1.rotation))
+        }
+
+        
+        //backarm1.rotation = armRotation1
+
+    } 
+
+    
+
+    if(kb.pressing('o')){
+        if(player2.pos.y > 750 && kb.pressing('l') < 40){
+            player2.pos.y -= 2
+            player2.velocity.y -= 3.5
+            player2.velocity.x += 3*Math.sin(radians(player2.rotation))
+        }
+
+        // if(armRotation2 < 360 + player2.rotation){
+        //     armRotation2 = min(360 + player2.rotation, armRotation2 + 10)
+        //     //armRotation1 += 5
+        // } else {
+        //     armRotation2 = 360 + player2.rotation
+        // }
+
+        
+
+    } else {
+        
+        // if(armRotation2 > 180 + player2.rotation){
+        //     armRotation2 = max(180 + player2.rotation, armRotation2 - 10)
+        //    //wwbackarm1.rotation -= 5
+        // } else {
+        //     armRotation2 = armRotation2
+        // }
+
+        
+
+        //backarm2.rotation = armRotation2
+        
+        
+        
+        
+    }
+
+    
+    
+    
+    if(player1.colliding(floor)){
+        lastCollide1 = frameCount
+        player1.vel.y = 0
+        player1.rotationLock = true
+        
+        collisionFrame1 += 1;
+        if(ampl1 > 3){
+            ampl1 -= 0.03
+        } else {
+            ampl1 = 3
+        }
+
+        // if(kb.presses('w')){
+        //     player1.pos.y -= 2
+        //     player1.velocity.y -= 8
+        //     player1.velocity.x += 8*Math.sin(radians(player1.rotation))
+        // }
+        
+        
+        
+    } else {
+        player1.velocity.y += 0.1
+    
+    
+        if(frameCount - lastCollide1 > 2){
+            player1.rotationLock = false
+            if(player1.rotation > 0){
+                collisionFrame1 = 0
+            } else {
+                collisionFrame1 = Math.PI*8
+            }
+            ampl1 = abs(player1.rotation/5)
+            ampl1 += min(0.1, max(2, ampl1)/20)
+        }
+        //collisionFrame1 += 0.8
+    }
+
+    //console.log(player1.colliding(floor))
+
+    if(player2.colliding(floor)){
+        lastCollide2 = frameCount
+        player2.vel.y = 0
+        player2.rotationLock = true
+        collisionFrame2 += 1;
+        if(ampl2 > 3){
+            ampl2 -= 0.03
+        } else {
+            ampl2 = 3
+        }
+
+        // if(kb.presses('o')){
+        //     player2.pos.y -= 2
+        //     player2.velocity.y -= 8
+        //     player2.velocity.x += 8*Math.sin(radians(player2.rotation))
+        // }
+    } else {
+        player2.velocity.y += 0.1
+        if(frameCount - lastCollide2 > 2){
+            player2.rotationLock = false
+            if(player2.rotation < 0){
+                collisionFrame2 = 0
+            } else {
+                collisionFrame2 = Math.PI*8
+            }
+            ampl2 = abs(player2.rotation/5)
+            ampl2 += min(0.1, max(2, ampl2)/20)
+        } 
+        
+        //collisionFrame2 += 0.8
+    }
+
+    
+
+
+    player1.rotation = 5*ampl1*Math.cos(collisionFrame1/8)
+    player2.rotation = -5*ampl2*Math.cos(collisionFrame2/8)
+    
+    //player1head.rotateTowards(200, 400, 0.1, 0)
+}
+
 function draw(){
+    background(200)
+    drawPlayer1()
+    drawPlayer2()
+    renderArm1()
+    renderArm2()
     if(!songPlaying){
         songPlaying = true
         pianoSound.play()
@@ -238,372 +625,7 @@ function draw(){
     } else if (frameCount - roundFrame >= 60 && frameCount - roundFrame <= 62){
         reset()
     } else {
-        noStroke()
-        background(200)
-        drawBall()
-        fill('red')
-        
-        text(score1, 200, 100)
-        fill('blue')
-        
-        text(score2, 1000, 100)
-        drawPlayer1()
-        drawPlayer2()
-        renderArm1()
-        renderArm2()
-        //drawBall()
-
-        textFont(pixelFont, 30)
-        fill('black')
-
-        text(`Ball Speed: ${Math.floor(ball.vel.x)}`, 600, 600)
-
-        if(ball.collides(backarm1)){
-            ballLastCollide = "LPADDLE"
-            paddleSound.play()
-            if(ball.vel.y < -max(5, ((295 - backarm1.pos.x)/295)*15)){
-                ball.vel.y = -max(5, ((295 - backarm1.pos.x)/295)*15)
-            }
-        } else if (ball.collides(backarm2)){
-            ballLastCollide = "RPADDLE"
-            paddleSound.play()
-            if(ball.vel.y < -max(5, ((backarm2.pos.x - 1065)/295)*15)){
-                ball.vel.y = -max(5, ((backarm2.pos.x - 1065)/295)*15)
-            }
-        }
-
-        if(ball.collides(table)){
-            tableSound.play()
-            if(ball.pos.x < 600){
-                if(ballLastCollide == "LEFT" || ballLastCollide == "LPADDLE"){
-                    score2 += 1
-                    scored = "RIGHT"
-                    roundFrame = frameCount
-                    //reset()
-                } else {
-                    ballLastCollide = "LEFT"
-                }
-                
-            } else {
-                if(ballLastCollide == "RIGHT" || ballLastCollide == "RPADDLE"){
-                    score1 += 1
-                    scored = "LEFT"
-                    roundFrame = frameCount
-                    //reset()
-                } else {
-                    ballLastCollide = "RIGHT"
-                }
-            }
-        }
-
-        if(ball.collides(floor)){
-            if(ball.pos.x < 600){
-                if(ballLastCollide == "LEFT" || ballLastCollide == "LPADDLE"){
-                    score2 += 1
-                    scored = "RIGHT"
-                    
-                    //reset()
-                } else {
-                    score1 += 1
-                    scored = "LEFT"
-                    
-                }
-                
-                roundFrame = frameCount
-                //reset()
-            } else {
-                if(ballLastCollide == "RIGHT" || ballLastCollide == "RPADDLE"){
-                    score1 += 1
-                    scored = "LEFT"
-                    //reset()
-                } else {
-                    score2 += 1
-                    scored = "RIGHT"
-                }
-                
-                roundFrame = frameCount
-            }
-        }
-        
-    
-        
-        
-            
-        // Fixes bounce bug in planck (inherent of p5play sadly)
-
-        
-        // if(ball.colliding(backarm1)){
-        //     ball.vel.x = 10
-        // } 
-        
-        // if(ball.colliding(backarm2)){
-        //     ball.vel.x = -10
-        // }
-        ////ball.rotationSpeed = 50
-        ball.vel.limit(20)
-        
-        if(ball.vel.x > 0 && ball.vel.x < 10){
-            ball.vel.x = 10
-        }
-
-        if(ball.vel.x < 0 && ball.vel.x > -10){
-            ball.vel.x = -10
-        }
-
-        // if(ball.vel.y > 15){
-        //     ball.vel.y = 15
-        // }
-
-        // if(ball.vel.y < -15){
-        //     ball.vel.y = -15
-        // }
-
-        // if(ball.vel.x > 20){
-        //     ball.vel.x = 20
-        // }
-
-        // if(ball.vel.x < -20){
-        //     ball.vel.x = -20
-        // }
-
-
-        
-        //console.log(backarm1.rotation, player1.rotation)
-
-        if(backarm1.rotation == 90 && player1shot == "NORM"){
-            backarm1.rotate(90, 10)
-            player1shot = "NONE"
-        }
-
-        if(backarm1.rotation == 180 && player1shot == "SMASH"){
-            player1shot = "NONE"
-        }
-
-        if(backarm2.rotation == -90 && player2shot == "NORM"){
-            backarm2.rotate(-90, 10)
-            player2shot = "NONE"
-        }
-
-        if(abs(backarm2.rotation) == 180 && player2shot == "SMASH"){
-            player2shot = "NONE"
-        }
-
-        if(player1.colliding(table)){
-            player1.rotationLock = true
-            ampl1 += 0.03
-        }
-
-        if(player2.colliding(table)){
-            player2.rotationLock = true
-            ampl2 += 0.03
-        }
-
-        if(kb.presses('d')){
-            if(armRotation1 > 0){
-                backarm1.rotation = 180
-                backarm1.rotate(-90, 10)
-                player1shot = "NORM"
-                
-                
-                if(backarm1.rotation <= -90){
-                    armRotation1 = backarm1.rotation + 360
-                } else {
-                    armRotation1 = backarm1.rotation
-                }
-                
-                
-            } else {
-                if(backarm1.rotation <= -90){
-                    armRotation1 = backarm1.rotation + 360
-                } else {
-                    armRotation1 = backarm1.rotation
-                }
-                backarm1.rotation = armRotation1
-            } 
-            
-        } 
-
-        if(kb.presses('e')){
-            
-            backarm1.rotation = 0
-            backarm1.rotate(180, 10)
-            player1shot = "SMASH"
-            
-            
-            if(backarm1.rotation <= -90){
-                armRotation1 = backarm1.rotation + 360
-            } else {
-                armRotation1 = backarm1.rotation
-            }
-                
-            
-            
-        } 
-        
-        if(kb.presses('j')){
-            
-            backarm2.rotation = -180
-            backarm2.rotate(90, 10)
-            player2shot = "NORM"
-            
-            
-            if(backarm2.rotation <= -90){
-                armRotation2 = backarm2.rotation + 360
-            } else {
-                armRotation2 = backarm2.rotation
-            }
-                
-                
-           
-            
-        } 
-
-        if(kb.presses('i')){
-            
-            backarm2.rotation = 0
-            backarm2.rotate(-180, 10)
-            player2shot = "SMASH"
-            
-            
-            if(backarm2.rotation <= -90){
-                armRotation2 = backarm2.rotation + 360
-            } else {
-                armRotation2 = backarm2.rotation
-            }
-                
-            
-            
-        } 
-
-        if(kb.pressing('w')){
-            if(player1.pos.y > 750 && kb.pressing('s') < 40){
-                player1.pos.y -= 2 
-                player1.velocity.y -= 3.5
-                player1.velocity.x += 3*Math.sin(radians(player1.rotation))
-            }
-
-            
-            //backarm1.rotation = armRotation1
-
-        } 
-
-        
-
-        if(kb.pressing('o')){
-            if(player2.pos.y > 750 && kb.pressing('l') < 40){
-                player2.pos.y -= 2
-                player2.velocity.y -= 3.5
-                player2.velocity.x += 3*Math.sin(radians(player2.rotation))
-            }
-
-            // if(armRotation2 < 360 + player2.rotation){
-            //     armRotation2 = min(360 + player2.rotation, armRotation2 + 10)
-            //     //armRotation1 += 5
-            // } else {
-            //     armRotation2 = 360 + player2.rotation
-            // }
-
-            
-
-        } else {
-            
-            // if(armRotation2 > 180 + player2.rotation){
-            //     armRotation2 = max(180 + player2.rotation, armRotation2 - 10)
-            //    //wwbackarm1.rotation -= 5
-            // } else {
-            //     armRotation2 = armRotation2
-            // }
-
-            
-
-            //backarm2.rotation = armRotation2
-            
-            
-            
-            
-        }
-
-        
-        
-        
-        if(player1.colliding(floor)){
-            lastCollide1 = frameCount
-            player1.vel.y = 0
-            player1.rotationLock = true
-            
-            collisionFrame1 += 1;
-            if(ampl1 > 3){
-                ampl1 -= 0.03
-            } else {
-                ampl1 = 3
-            }
-
-            // if(kb.presses('w')){
-            //     player1.pos.y -= 2
-            //     player1.velocity.y -= 8
-            //     player1.velocity.x += 8*Math.sin(radians(player1.rotation))
-            // }
-            
-            
-            
-        } else {
-            player1.velocity.y += 0.1
-        
-        
-            if(frameCount - lastCollide1 > 2){
-                player1.rotationLock = false
-                if(player1.rotation > 0){
-                    collisionFrame1 = 0
-                } else {
-                    collisionFrame1 = Math.PI*8
-                }
-                ampl1 = abs(player1.rotation/5)
-                ampl1 += min(0.1, max(2, ampl1)/20)
-            }
-            //collisionFrame1 += 0.8
-        }
-
-        //console.log(player1.colliding(floor))
-
-        if(player2.colliding(floor)){
-            lastCollide2 = frameCount
-            player2.vel.y = 0
-            player2.rotationLock = true
-            collisionFrame2 += 1;
-            if(ampl2 > 3){
-                ampl2 -= 0.03
-            } else {
-                ampl2 = 3
-            }
-
-            // if(kb.presses('o')){
-            //     player2.pos.y -= 2
-            //     player2.velocity.y -= 8
-            //     player2.velocity.x += 8*Math.sin(radians(player2.rotation))
-            // }
-        } else {
-            player2.velocity.y += 0.1
-            if(frameCount - lastCollide2 > 2){
-                player2.rotationLock = false
-                if(player2.rotation < 0){
-                    collisionFrame2 = 0
-                } else {
-                    collisionFrame2 = Math.PI*8
-                }
-                ampl2 = abs(player2.rotation/5)
-                ampl2 += min(0.1, max(2, ampl2)/20)
-            } 
-            
-            //collisionFrame2 += 0.8
-        }
-
-        
-
-
-        player1.rotation = 5*ampl1*Math.cos(collisionFrame1/8)
-        player2.rotation = -5*ampl2*Math.cos(collisionFrame2/8)
-        
-        //player1head.rotateTowards(200, 400, 0.1, 0)
+        renderRound()
     }
     
     
