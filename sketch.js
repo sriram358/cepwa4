@@ -148,7 +148,7 @@ function renderBallTrail(){
         
         circle(ballPosList[i].x, ballPosList[i].y, (60-i)/1)
         //circle(i*20, ballPosList[0].y, (60-i)/1)
-        console.log(i)
+        //console.log(i)
         
     }
     //console.log(ballPosList)
