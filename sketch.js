@@ -5,7 +5,7 @@ let pixelFont, tableSound, paddleSound, pianoSound
 let score1 = 0, score2 = 0
 let ballLastCollide = "NONE"
 let ballPosList = []
-let roundFrame = -1000
+let roundFrame = -60
 //let frameCount = 0;
 let changeFrame = -1000;
 let rotateDire1 = "left"
@@ -16,6 +16,8 @@ let armRotation2 = 180
 let songPlaying = false
 let player1shot = "NONE", player2shot = "NONE"
 let trailList = []
+let gameStarted = false
+let playButton
 
 function preload(){
     pixelFont = loadFont("Overpass.ttf")
@@ -27,7 +29,12 @@ function preload(){
 function setup(){
     createCanvas(1200, 800)
     angleMode(DEGREES)
-   
+    
+    playButton = new Sprite(600, 400, 200, 100)
+    playButton.textSize = 80
+    playButton.text = "Play!"
+    playButton.visible = false
+    playButton.collider = "kinematic"
     player1 = new Sprite(100, 550, 50)
     player2 = new Sprite(1000, 550, 50)
     floor = new Sprite(600, 800, 1200, 4)
@@ -66,6 +73,10 @@ function setup(){
     floor.visible = false
     wall1.visible = false
     wall2.visible = false
+    table.visible = false
+    net.visible = false
+    backarm1.visible = false
+    backarm2.visible = false
     player1.d = 50
     player2.d = 50
     player1.rotation = 0
@@ -158,11 +169,11 @@ function renderBallTrail(){
 function reset(){
 
     
-
+    trailList = []
     ballLastCollide = "NONE"
     backarm1.rotation = 180
     backarm2.rotation = 180
-    let x = Math.floor(Math.random(2))
+    let x = Math.floor(Math.random()*2)
     if(x >= 0){
         ball.pos = createVector(800, 500)
         ball.velocity.x = -15
@@ -172,7 +183,8 @@ function reset(){
     }
     player1.pos = createVector(100, 550)
     player2.pos = createVector(1000, 550)
-    
+    player1.vel.x = 0
+    player2.vel.x = 0
     floor.visible = false
     wall1.visible = false
     wall2.visible = false
@@ -183,6 +195,7 @@ function reset(){
     player1.visible = false
     player2.visible = false
     ball.visible = false
+    
     ampl1 = 3
     ampl2 = 3
     collisionFrame1 = 0
@@ -233,14 +246,14 @@ function renderRound(){
     if(ball.collides(backarm1)){
         ballLastCollide = "LPADDLE"
         paddleSound.play()
-        if(ball.vel.y < -max(7, ((295 - backarm1.pos.x)/295)*15)){
-            ball.vel.y = -max(7, ((295 - backarm1.pos.x)/295)*15)
+        if(ball.vel.y < -max(6, ((295 - backarm1.pos.x)/295)*15)){
+            ball.vel.y = -max(6, ((295 - backarm1.pos.x)/295)*15)
         }
     } else if (ball.collides(backarm2)){
         ballLastCollide = "RPADDLE"
         paddleSound.play()
-        if(ball.vel.y < -max(7, ((backarm2.pos.x - 1065)/295)*15)){
-            ball.vel.y = -max(7, ((backarm2.pos.x - 1065)/295)*15)
+        if(ball.vel.y < -max(6, ((backarm2.pos.x - 1065)/295)*15)){
+            ball.vel.y = -max(6, ((backarm2.pos.x - 1065)/295)*15)
         }
     }
 
@@ -586,11 +599,34 @@ function draw(){
     renderArm2()
     if(!songPlaying){
         songPlaying = true
-        pianoSound.play()
+        //pianoSound.play()
     }
     textFont(pixelFont, 120)
     // drawBall()
-    if(frameCount - roundFrame < 60){
+    if(gameStarted == false){
+        fill(20)
+        frameCount -= 1
+        rect(0, 0, 1200, 800)
+        playButton.draw()
+        fill(255)
+        textStyle(pixelFont, 20)
+        textSize(120)
+        text("Pong Random!", 600, 200)
+        textStyle(pixelFont, 50)
+        textSize(50)
+        text("Game by V Sriram", 600, 700)
+        if(mouse.pressing()){
+            gameStarted = true
+            playButton.visible = false
+            playButton.collider = "none"
+            console.log("aarmabikalaam")
+            table.visible = true
+            net.visible = true
+            backarm1.visible = true
+            backarm2.visible = true
+        }
+
+    } else if(frameCount - roundFrame < 60){
         drawBall()
         if(ball.collides(backarm1)){
             paddleSound.play()
@@ -602,10 +638,20 @@ function draw(){
         fill(200)
         noStroke()
         rect(0, 0, 1200, 400)
+        fill(200)
+        noStroke()
+        rect(0, 150, 1200, 200)
+        
         fill('red')
         if(scored == "LEFT"){
             text(score1-1, 200 , 100 - min(20, (frameCount - roundFrame))*5)
             text(score1, 200 , 200 - min(20, (frameCount - roundFrame))*5)
+
+            if((frameCount - roundFrame)%20 < 12){
+                text("◀ Point Red", 600, 400)
+            } else {
+                fill(255, 0, 0, (20-(frameCount - roundFrame)%20)*31.8)
+            }
         } else {
             text(score1, 200 , 100)
         }
@@ -614,18 +660,41 @@ function draw(){
         if(scored == "RIGHT"){
             text(score2-1, 1000 , 100 - min(20, (frameCount - roundFrame))*5)
             text(score2, 1000 , 200 - min(20, (frameCount - roundFrame))*5)
+            if((frameCount - roundFrame)%20 < 12){
+                text("Point Blue ▶", 600, 400)
+            } else {
+                fill(255, 0, 0, (20-(frameCount - roundFrame)%20)*31.8)
+            }
         } else {
             text(score2, 1000 , 100)
         }
 
-        fill(200)
-        noStroke()
-        rect(0, 150, 1200, 200)
         
-    } else if (frameCount - roundFrame >= 60 && frameCount - roundFrame <= 62){
+    } else if (frameCount - roundFrame == 60 || frameCount - roundFrame == 150){
         reset()
+        world.gravity.y = 35
+    } else if (frameCount - roundFrame < 150){
+        fill(0, 0, 0, min(25, 150-(frameCount - roundFrame))*5)
+        rect(0, 0, 1200, 800)
+        world.gravity.y = 0
+        ball.velocity.x = 0
+        ball.velocity.y = 0
+        fill("white")
+        text(Math.ceil((150 - (frameCount - roundFrame))/30), 600, 400)
+        fill('red')
+    
+        text(score1, 200, 100)
+        fill('blue')
+        
+        text(score2, 1000, 100)
     } else {
+        
         renderRound()
+        textFont(pixelFont, 120)
+        if(frameCount - roundFrame < 210 && frameCount - roundFrame > 2){
+            fill(0, 0, 0, (210-(frameCount - roundFrame))*4.25)
+            text("Play!", 600, 400)
+        }
     }
     
     
