@@ -18,12 +18,15 @@ let player1shot = "NONE", player2shot = "NONE"
 let trailList = []
 let gameStarted = false
 let playButton
-
+let playerImage, playerImage2
 function preload(){
     pixelFont = loadFont("Overpass.ttf")
     tableSound = loadSound("table.mp3")
     paddleSound = loadSound("paddle.mp3")
     pianoSound = loadSound("piano.mp3")
+    playerImage = loadImage("assets/char1.png")
+    playerImage2 = loadImage("assets/char1a.png")
+
 }
 
 function setup(){
@@ -36,25 +39,25 @@ function setup(){
     playButton.visible = false
     playButton.collider = "kinematic"
     player1 = new Sprite(100, 550, 50)
-    player2 = new Sprite(1000, 550, 50)
+    player2 = new Sprite(1100, 550, 50)
     floor = new Sprite(600, 800, 1200, 4)
     wall1 = new Sprite(0, 400, 4, 800)
     wall2 = new Sprite(1200, 400, 4, 800)
-    table = new Sprite(600, 750, 625, 150)
-    net = new Sprite(600, 660, 10, 30)
-    ball = new Sprite(800, 500, 20)
+    table = new Sprite(600, 790, 625, 150)
+    net = new Sprite(600, 700, 10, 30)
+    ball = new Sprite(800, 540, 20)
     
     
-    backarm1 = new Sprite(100, 400, 30, 130)
+    backarm1 = new Sprite(100, 400, 30, 115)
     backarm1.offset.y = -50
-    backarm2 = new Sprite(1000, 400, 30, 130)
+    backarm2 = new Sprite(1000, 400, 30, 115)
     backarm2.offset.y = -50
     
     ball.collider = "dynamic"
     backarm1.collider = "kinematic"
     backarm2.collider = "kinematic"
-    backarm1.mass = 60
-    backarm2.mass = 60
+    backarm1.mass = 1
+    backarm2.mass = 1
     player1.mass = 1000
     player2.mass = 1000
     
@@ -87,8 +90,8 @@ function setup(){
     player2.rotationLock = true
     player1.friction = 1000
     player2.friction = 1000
-    player1.visible = false
-    player2.visible = false
+    player1.visible = true
+    player2.visible = true
     ball.visible = false
     player1.rotationDrag = 100
     player2.rotationDrag = 100
@@ -104,7 +107,7 @@ function setup(){
     lastCollide2 = 0
     ball.velocity.x = -15
     ball.bounciness = 0.85
-    ball.mass = 600
+    ball.mass = 10
     ball.drag = 0.5
     textAlign(CENTER)
 }
@@ -113,10 +116,16 @@ function drawPlayer1(){
     push()
     translate(player1.pos.x, player1.pos.y)
     rotate(player1.rotation)
-    fill(255, 0, 0)
-    circle(0, 0, 50)
-    rect(-25, -25-200, 50, 200)
+    // fill(255, 0, 0)
+    // circle(0, 0, 50)
+    // rect(-25, -25-200, 50, 200)
+    
+    player1.img = playerImage
+    player1.img.scale.x = 1
+    player1.img.offset.y = -100
+    //player1.img.scale.x = -11
     pop()
+
 }
 
 function drawPlayer2(){
@@ -124,9 +133,12 @@ function drawPlayer2(){
     //console.log("skibidi")
     translate(player2.pos.x, player2.pos.y)
     rotate(player2.rotation)
-    fill(0, 0, 255)
-    circle(0, 0, 50)
-    rect(-25, -25-200, 50, 200)
+    // fill(0, 0, 255)
+    // circle(0, 0, 50)
+    // rect(-25, -25-200, 50, 200)
+    player2.img = playerImage2
+    player2.img.offset.y = -100
+    player2.img.scale.x = -1
     pop()
 }
 
@@ -140,13 +152,13 @@ function drawBall(){
 
 
 function renderArm1(){
-    backarm1.pos.x = player1.pos.x + 180*Math.sin(radians(player1.rotation))
-    backarm1.pos.y = player1.pos.y - 180*Math.cos(radians(player1.rotation))
+    backarm1.pos.x = player1.pos.x + 160*Math.sin(radians(player1.rotation))
+    backarm1.pos.y = player1.pos.y - 140*Math.cos(radians(player1.rotation))
 }
 
 function renderArm2(){
-    backarm2.pos.x = player2.pos.x + 180*Math.sin(radians(player2.rotation))
-    backarm2.pos.y = player2.pos.y - 180*Math.cos(radians(player2.rotation))
+    backarm2.pos.x = player2.pos.x + 160*Math.sin(radians(player2.rotation))
+    backarm2.pos.y = player2.pos.y - 140*Math.cos(radians(player2.rotation))
 }
 
 function renderBallTrail(){
@@ -175,13 +187,13 @@ function reset(){
     backarm2.rotation = 180
     let x = Math.floor(Math.random()*2)
     if(x >= 0){
-        ball.pos = createVector(800, 500)
+        ball.pos = createVector(800, 540)
         ball.velocity.x = -15
     } else {
-        ball.pos = createVector(400, 500)
+        ball.pos = createVector(400, 540)
         ball.velocity.x = 15
     }
-    player1.pos = createVector(100, 550)
+    player1.pos = createVector(200, 550)
     player2.pos = createVector(1000, 550)
     player1.vel.x = 0
     player2.vel.x = 0
@@ -192,8 +204,8 @@ function reset(){
     player2.rotation = 0
     player1.rotationLock = true
     player2.rotationLock = true
-    player1.visible = false
-    player2.visible = false
+    player1.visible = true
+    player2.visible = true
     ball.visible = false
     
     ampl1 = 3
@@ -373,15 +385,15 @@ function renderRound(){
         player2shot = "NONE"
     }
 
-    if(player1.colliding(table)){
-        player1.rotationLock = true
-        ampl1 += 0.03
-    }
+    // if(player1.colliding(table)){
+    //     player1.rotationLock = true
+    //     ampl1 += 0.03
+    // }
 
-    if(player2.colliding(table)){
-        player2.rotationLock = true
-        ampl2 += 0.03
-    }
+    // if(player2.colliding(table)){
+    //     player2.rotationLock = true
+    //     ampl2 += 0.03
+    // }
 
     if(kb.presses('d')){
         if(armRotation1 > 0){
@@ -462,8 +474,8 @@ function renderRound(){
 
     if(kb.pressing('w')){
         if(player1.pos.y > 750 && kb.pressing('s') < 40){
-            player1.pos.y -= 2 
-            player1.velocity.y -= 3.5
+            player1.pos.y -= 2
+            player1.velocity.y -= 2.8
             player1.velocity.x += 3*Math.sin(radians(player1.rotation))
         }
 
@@ -477,7 +489,7 @@ function renderRound(){
     if(kb.pressing('o')){
         if(player2.pos.y > 750 && kb.pressing('l') < 40){
             player2.pos.y -= 2
-            player2.velocity.y -= 3.5
+            player2.velocity.y -= 2.8
             player2.velocity.x += 3*Math.sin(radians(player2.rotation))
         }
 
@@ -511,7 +523,7 @@ function renderRound(){
     
     
     
-    if(player1.colliding(floor)){
+    if(player1.colliding(floor) || player1.colliding(table)){
         lastCollide1 = frameCount
         player1.vel.y = 0
         player1.rotationLock = true
@@ -550,7 +562,7 @@ function renderRound(){
 
     //console.log(player1.colliding(floor))
 
-    if(player2.colliding(floor)){
+    if(player2.colliding(floor) || player2.colliding(table)){
         lastCollide2 = frameCount
         player2.vel.y = 0
         player2.rotationLock = true
@@ -615,6 +627,7 @@ function draw(){
         textStyle(pixelFont, 50)
         textSize(50)
         text("Game by V Sriram", 600, 700)
+        //image(playerImage, 200, 400)
         if(mouse.pressing()){
             gameStarted = true
             playButton.visible = false
