@@ -473,10 +473,10 @@ function renderRound(){
     } 
 
     if(kb.pressing('w')){
-        if(player1.pos.y > 750 && kb.pressing('s') < 40){
+        if(player1.pos.y > 750 && kb.pressing('w') < 40){
             player1.pos.y -= 5
-            player1.velocity.y -= 2.7
-            player1.velocity.x += 5*Math.sin(radians(player1.rotation))
+            player1.velocity.y -= 3.1
+            player1.velocity.x += min(3,5*Math.sin(radians(player1.rotation)))
         }
 
         
@@ -487,10 +487,10 @@ function renderRound(){
     
 
     if(kb.pressing('o')){
-        if(player2.pos.y > 750 && kb.pressing('l') < 40){
+        if(player2.pos.y > 750 && kb.pressing('o') < 40){
             player2.pos.y -= 5
-            player2.velocity.y -= 2.7
-            player2.velocity.x += 5*Math.sin(radians(player2.rotation))
+            player2.velocity.y -= 3.1
+            player2.velocity.x += max(-3, 5*Math.sin(radians(player2.rotation)))
         }
 
         // if(armRotation2 < 360 + player2.rotation){
@@ -525,7 +525,7 @@ function renderRound(){
     
     if(player1.colliding(floor) || player1.colliding(table)){
         lastCollide1 = frameCount
-        player1.vel.y = 0
+        player1.vel.y = 0.2
         player1.rotationLock = true
         
         collisionFrame1 += 1;
@@ -544,7 +544,7 @@ function renderRound(){
         
         
     } else {
-        player1.velocity.y += 0.1
+        //player1.velocity.y += 0.1
     
     
         if(frameCount - lastCollide1 > 2){
@@ -564,7 +564,7 @@ function renderRound(){
 
     if(player2.colliding(floor) || player2.colliding(table)){
         lastCollide2 = frameCount
-        player2.vel.y = 0
+        player2.vel.y = 0.2
         player2.rotationLock = true
         collisionFrame2 += 1;
         if(ampl2 > 3){
@@ -579,7 +579,7 @@ function renderRound(){
         //     player2.velocity.x += 8*Math.sin(radians(player2.rotation))
         // }
     } else {
-        player2.velocity.y += 0.1
+        //player2.velocity.y += 0.1
         if(frameCount - lastCollide2 > 2){
             //player2.rotationLock = false
             if(player2.rotation < 0){
