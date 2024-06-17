@@ -474,9 +474,9 @@ function renderRound(){
 
     if(kb.pressing('w')){
         if(player1.pos.y > 750 && kb.pressing('s') < 40){
-            player1.pos.y -= 2
-            player1.velocity.y -= 2.8
-            player1.velocity.x += 3*Math.sin(radians(player1.rotation))
+            player1.pos.y -= 5
+            player1.velocity.y -= 2.7
+            player1.velocity.x += 5*Math.sin(radians(player1.rotation))
         }
 
         
@@ -488,9 +488,9 @@ function renderRound(){
 
     if(kb.pressing('o')){
         if(player2.pos.y > 750 && kb.pressing('l') < 40){
-            player2.pos.y -= 2
-            player2.velocity.y -= 2.8
-            player2.velocity.x += 3*Math.sin(radians(player2.rotation))
+            player2.pos.y -= 5
+            player2.velocity.y -= 2.7
+            player2.velocity.x += 5*Math.sin(radians(player2.rotation))
         }
 
         // if(armRotation2 < 360 + player2.rotation){
@@ -548,7 +548,7 @@ function renderRound(){
     
     
         if(frameCount - lastCollide1 > 2){
-            player1.rotationLock = false
+            //player1.rotationLock = false
             if(player1.rotation > 0){
                 collisionFrame1 = 0
             } else {
@@ -581,7 +581,7 @@ function renderRound(){
     } else {
         player2.velocity.y += 0.1
         if(frameCount - lastCollide2 > 2){
-            player2.rotationLock = false
+            //player2.rotationLock = false
             if(player2.rotation < 0){
                 collisionFrame2 = 0
             } else {
