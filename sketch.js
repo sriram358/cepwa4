@@ -44,7 +44,7 @@ function setup(){
     wall1 = new Sprite(0, 400, 4, 800)
     wall2 = new Sprite(1200, 400, 4, 800)
     table = new Sprite(600, 790, 625, 150)
-    net = new Sprite(600, 700, 10, 30)
+    net = new Sprite(600, 705, 8, 20)
     ball = new Sprite(800, 540, 20)
     
     
@@ -122,7 +122,7 @@ function drawPlayer1(){
     
     player1.img = playerImage
     player1.img.scale.x = 1
-    player1.img.offset.y = -100
+    player1.img.offset.y = -110
     //player1.img.scale.x = -11
     pop()
 
@@ -137,7 +137,7 @@ function drawPlayer2(){
     // circle(0, 0, 50)
     // rect(-25, -25-200, 50, 200)
     player2.img = playerImage2
-    player2.img.offset.y = -100
+    player2.img.offset.y = -110
     player2.img.scale.x = -1
     pop()
 }
@@ -293,7 +293,7 @@ function renderRound(){
         }
     }
 
-    if(ball.collides(floor)){
+    if(ball.collides(floor) || ball.collides(player1) || ball.collides(player2)){
         if(ball.pos.x < 600){
             if(ballLastCollide == "LEFT" || ballLastCollide == "LPADDLE"){
                 score2 += 1
@@ -473,10 +473,10 @@ function renderRound(){
     } 
 
     if(kb.pressing('w')){
-        if(player1.pos.y > 750 && kb.pressing('w') < 40){
-            player1.pos.y -= 5
-            player1.velocity.y -= 3.1
-            player1.velocity.x += min(3,5*Math.sin(radians(player1.rotation)))
+        if(player1.pos.y > 725 && kb.pressing('w') < 10){
+            player1.pos.y -= 2
+            player1.velocity.y -= abs(1.5*Math.cos(radians(player2.rotation)))
+            player1.velocity.x += 2*Math.sin(radians(player1.rotation))
         }
 
         
@@ -487,10 +487,10 @@ function renderRound(){
     
 
     if(kb.pressing('o')){
-        if(player2.pos.y > 750 && kb.pressing('o') < 40){
-            player2.pos.y -= 5
-            player2.velocity.y -= 3.1
-            player2.velocity.x += max(-3, 5*Math.sin(radians(player2.rotation)))
+        if(player2.pos.y > 725 && kb.pressing('o') < 10){
+            player2.pos.y -= 2
+            player2.velocity.y -= abs(1.5*Math.cos(radians(player2.rotation)))
+            player2.velocity.x += 2*Math.sin(radians(player2.rotation))
         }
 
         // if(armRotation2 < 360 + player2.rotation){
