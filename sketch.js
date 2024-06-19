@@ -292,7 +292,7 @@ function renderRound(){
         // }
         
         if(player1shot == "NORM" || player1shot == "NONE"){
-            ball.vel.x = map(300-backarm1.pos.x, 0, 300, 8, 23)
+            ball.vel.x = map(300-backarm1.pos.x, 0, 300, 8, 18)
             ball.vel.y = max(-12, ball.vel.y)
         } else if (player1shot == "SMASH"){
             ball.vel.x = map(300-backarm1.pos.x, 0, 300, 23, 23)
@@ -310,7 +310,7 @@ function renderRound(){
         //     ball.vel.y = -max(6, ((backarm2.pos.x - 1065)/295)*15)
         // }
         if(player2shot == "NORM" || player2shot == "NONE"){
-            ball.vel.x = -map(backarm2.pos.x-900, 0, 300, 8, 23)
+            ball.vel.x = -map(backarm2.pos.x-900, 0, 300, 8, 18)
             ball.vel.y = max(-12, ball.vel.y)
         } else if (player2shot == "SMASH"){
             ball.vel.x = -map(backarm2.pos.x-900, 0, 300, 23, 23)
@@ -526,7 +526,7 @@ function renderRound(){
     if(kb.pressing('w')){
         if(player1.pos.y > 725-200 && kb.pressing('w') < 10){
             player1.pos.y -= 2
-            player1.velocity.y -= abs(1.5*Math.cos(radians(player2.rotation)))
+            player1.velocity.y -= abs(1.35*Math.cos(radians(player2.rotation)))
             player1.velocity.x += 2*Math.sin(radians(player1.rotation))
         }
 
@@ -540,7 +540,7 @@ function renderRound(){
     if(kb.pressing('o')){
         if(player2.pos.y > 725-200 && kb.pressing('o') < 10){
             player2.pos.y -= 2
-            player2.velocity.y -= abs(1.5*Math.cos(radians(player2.rotation)))
+            player2.velocity.y -= abs(1.35*Math.cos(radians(player2.rotation)))
             player2.velocity.x += 2*Math.sin(radians(player2.rotation))
         }
 
