@@ -19,6 +19,7 @@ let trailList = []
 let gameStarted = false
 let playButton
 let playerImage, playerImage2
+let costume1 = 1, costume2 = 2
 function preload(){
     pixelFont = loadFont("Overpass.ttf")
     tableSound = loadSound("table.mp3")
@@ -120,7 +121,7 @@ function drawPlayer1(){
     // circle(0, 0, 50)
     // rect(-25, -25-200, 50, 200)
     
-    player1.img = playerImage
+    player1.img = `assets/char${costume1}.png`
     player1.img.scale.x = 1
     player1.img.offset.y = -110
     //player1.img.scale.x = -11
@@ -136,7 +137,7 @@ function drawPlayer2(){
     // fill(0, 0, 255)
     // circle(0, 0, 50)
     // rect(-25, -25-200, 50, 200)
-    player2.img = playerImage2
+    player2.img = `assets/char${costume2}a.png`
     player2.img.offset.y = -110
     player2.img.scale.x = -1
     pop()
@@ -154,11 +155,23 @@ function drawBall(){
 function renderArm1(){
     backarm1.pos.x = player1.pos.x + 160*Math.sin(radians(player1.rotation))
     backarm1.pos.y = player1.pos.y - 140*Math.cos(radians(player1.rotation))
+    backarm1.img = `assets/arm1-${costume1}.png`
+    backarm1.img.scale.y = 1
+    backarm1.img.scale.x = 1
+    backarm1.img.offset.y = 0
+    backarm1.img.offset.x = -5
+    
 }
 
 function renderArm2(){
     backarm2.pos.x = player2.pos.x + 160*Math.sin(radians(player2.rotation))
     backarm2.pos.y = player2.pos.y - 140*Math.cos(radians(player2.rotation))
+    backarm2.img = `assets/arm2-${costume2}.png`
+    backarm2.img.scale.y = 1
+    backarm2.img.scale.x = 1
+    backarm2.img.offset.y = 0
+    backarm2.img.offset.x = 5
+   
 }
 
 function renderBallTrail(){
@@ -267,7 +280,7 @@ function renderRound(){
             ball.vel.y = max(-12, ball.vel.y)
         } else if (player1shot == "SMASH"){
             ball.vel.x = map(300-backarm1.pos.x, 0, 300, 23, 23)
-            ball.vel.y = min(-3, ball.vel.y)
+            ball.vel.y = min(0, ball.vel.y)
         }
            
         //backarm1.rotation = 180
@@ -285,7 +298,7 @@ function renderRound(){
             ball.vel.y = max(-12, ball.vel.y)
         } else if (player2shot == "SMASH"){
             ball.vel.x = -map(backarm2.pos.x-900, 0, 300, 23, 23)
-            ball.vel.y = min(-3, ball.vel.y)
+            ball.vel.y = min(0, ball.vel.y)
         }
     }
 
