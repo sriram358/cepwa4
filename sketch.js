@@ -18,7 +18,7 @@ let player1shot = "NONE", player2shot = "NONE"
 let trailList = []
 let gameStarted = false
 let playButton
-let playerImage, playerImage2
+let playerImage, playerImage2, tableImage
 let costume1 = 1, costume2 = 2
 function preload(){
     pixelFont = loadFont("Overpass.ttf")
@@ -27,11 +27,12 @@ function preload(){
     pianoSound = loadSound("piano.mp3")
     playerImage = loadImage("assets/char1.png")
     playerImage2 = loadImage("assets/char1a.png")
+    tableImage = loadImage("assets/table.png")
 
 }
 
 function setup(){
-    createCanvas(1200, 800)
+    createCanvas(1200, 600)
     angleMode(DEGREES)
     
     playButton = new Sprite(600, 400, 200, 100)
@@ -39,19 +40,19 @@ function setup(){
     playButton.text = "Play!"
     playButton.visible = false
     playButton.collider = "kinematic"
-    player1 = new Sprite(100, 550, 50)
-    player2 = new Sprite(1100, 550, 50)
-    floor = new Sprite(600, 800, 1200, 4)
-    wall1 = new Sprite(0, 400, 4, 800)
-    wall2 = new Sprite(1200, 400, 4, 800)
-    table = new Sprite(600, 790, 625, 150)
-    net = new Sprite(600, 705, 8, 20)
-    ball = new Sprite(800, 540, 20)
+    player1 = new Sprite(100, 550-200, 50)
+    player2 = new Sprite(1100, 550-200, 50)
+    floor = new Sprite(600, 800-200, 1200, 4)
+    wall1 = new Sprite(0, 400-200, 4, 800)
+    wall2 = new Sprite(1200, 400-200, 4, 800)
+    table = new Sprite(600, 790-200, 625, 150)
+    net = new Sprite(600, 705-200, 8, 20)
+    ball = new Sprite(800, 540-200, 20)
     
     
-    backarm1 = new Sprite(100, 400, 30, 115)
+    backarm1 = new Sprite(100, 400-200, 30, 115)
     backarm1.offset.y = -50
-    backarm2 = new Sprite(1000, 400, 30, 115)
+    backarm2 = new Sprite(1000, 400-200, 30, 115)
     backarm2.offset.y = -50
     
     ball.collider = "dynamic"
@@ -93,7 +94,7 @@ function setup(){
     player2.friction = 1000
     player1.visible = true
     player2.visible = true
-    ball.visible = false
+    ball.visible = true
     player1.rotationDrag = 100
     player2.rotationDrag = 100
     // player1.addCollider(0,-125, 50, 200)
@@ -108,8 +109,13 @@ function setup(){
     lastCollide2 = 0
     ball.velocity.x = -15
     ball.bounciness = 0.92
+    ball.color = "white"
     ball.mass = 10
     ball.drag = 0.5
+    table.img = `assets/table.png`
+    table.img.offset.y = -330
+    table.img.scale.x = 0.7
+    table.img.scale.y = 0.6
     textAlign(CENTER)
 }
 
@@ -148,6 +154,10 @@ function drawBall(){
     stroke("black")
     fill("white")
     circle(ball.pos.x, ball.pos.y, 20)
+}
+
+function drawTable(){
+    image(tableImage, 600-312-18, 790-300)
 }
     
 
@@ -191,6 +201,11 @@ function renderBallTrail(){
     //console.log(ballPosList)
 }
 
+function costumeChange(){
+    costume1 = Math.floor(random(1, 6))
+    costume2 = Math.floor(random(1, 6))
+}
+
 function reset(){
 
     
@@ -198,16 +213,16 @@ function reset(){
     ballLastCollide = "NONE"
     backarm1.rotation = 180
     backarm2.rotation = 180
-    let x = Math.floor(Math.random()*2)
-    if(x >= 0){
-        ball.pos = createVector(800, 540)
+    let nn = Math.floor(random(0, 2))
+    if(nn == 0){
+        ball.pos = createVector(800, 540-200)
         ball.velocity.x = -15
     } else {
-        ball.pos = createVector(400, 540)
+        ball.pos = createVector(400, 540-200)
         ball.velocity.x = 15
     }
-    player1.pos = createVector(200, 550)
-    player2.pos = createVector(1000, 550)
+    player1.pos = createVector(200, 550-200)
+    player2.pos = createVector(1000, 550-200)
     player1.vel.x = 0
     player2.vel.x = 0
     floor.visible = false
@@ -219,7 +234,7 @@ function reset(){
     player2.rotationLock = true
     player1.visible = true
     player2.visible = true
-    ball.visible = false
+    ball.visible = true
     
     ampl1 = 3
     ampl2 = 3
@@ -233,6 +248,7 @@ function reset(){
     ball.mass = 600
     ball.drag = 0.5 
     textAlign(CENTER)
+    
 }
 
 function renderRound(){
@@ -242,20 +258,20 @@ function renderRound(){
     //renderBallTrail()
     fill('red')
     
-    text(score1, 200, 100)
+    text(score1, 500, 100)
     fill('blue')
     
-    text(score2, 1000, 100)
+    text(score2, 700, 100)
     drawPlayer1()
     drawPlayer2()
     renderArm1()
     renderArm2()
-    //drawBall()
+    drawTable()
 
     textFont(pixelFont, 30)
     fill('black')
 
-    text(`Ball Speed: ${Math.floor(ball.vel.mag())}`, 600, 600)
+    //text(`Ball Speed: ${Math.floor(ball.vel.mag())}`, 600, 600)
 
     trailList.push(new Trail(ball.pos.x, ball.pos.y, ball.vel.x, ball.vel.y))
 
@@ -508,7 +524,7 @@ function renderRound(){
     } 
 
     if(kb.pressing('w')){
-        if(player1.pos.y > 725 && kb.pressing('w') < 10){
+        if(player1.pos.y > 725-200 && kb.pressing('w') < 10){
             player1.pos.y -= 2
             player1.velocity.y -= abs(1.5*Math.cos(radians(player2.rotation)))
             player1.velocity.x += 2*Math.sin(radians(player1.rotation))
@@ -522,7 +538,7 @@ function renderRound(){
     
 
     if(kb.pressing('o')){
-        if(player2.pos.y > 725 && kb.pressing('o') < 10){
+        if(player2.pos.y > 725-200 && kb.pressing('o') < 10){
             player2.pos.y -= 2
             player2.velocity.y -= abs(1.5*Math.cos(radians(player2.rotation)))
             player2.velocity.x += 2*Math.sin(radians(player2.rotation))
@@ -644,6 +660,7 @@ function draw(){
     drawPlayer2()
     renderArm1()
     renderArm2()
+    drawTable()
     if(!songPlaying){
         songPlaying = true
         //pianoSound.play()
@@ -654,6 +671,7 @@ function draw(){
         fill(20)
         frameCount -= 1
         rect(0, 0, 1200, 800)
+        drawTable()
         playButton.draw()
         fill(255)
         textStyle(pixelFont, 20)
@@ -668,7 +686,7 @@ function draw(){
             playButton.visible = false
             playButton.collider = "none"
             console.log("aarmabikalaam")
-            table.visible = true
+            table.visible = false
             net.visible = true
             backarm1.visible = true
             backarm2.visible = true
@@ -692,34 +710,40 @@ function draw(){
         
         fill('red')
         if(scored == "LEFT"){
-            text(score1-1, 200 , 100 - min(20, (frameCount - roundFrame))*5)
-            text(score1, 200 , 200 - min(20, (frameCount - roundFrame))*5)
+            text(score1-1, 500 , 100 - min(20, (frameCount - roundFrame))*5)
+            text(score1, 500 , 200 - min(20, (frameCount - roundFrame))*5)
 
             if((frameCount - roundFrame)%20 < 12){
-                text("◀ Point Red", 600, 400)
+                text("◀ Point Red", 600, 300)
             } else {
                 fill(255, 0, 0, (20-(frameCount - roundFrame)%20)*31.8)
             }
         } else {
-            text(score1, 200 , 100)
+            text(score1, 500 , 100)
         }
         
         fill('blue')
         if(scored == "RIGHT"){
-            text(score2-1, 1000 , 100 - min(20, (frameCount - roundFrame))*5)
-            text(score2, 1000 , 200 - min(20, (frameCount - roundFrame))*5)
+            text(score2-1, 700 , 100 - min(20, (frameCount - roundFrame))*5)
+            text(score2, 700 , 200 - min(20, (frameCount - roundFrame))*5)
             if((frameCount - roundFrame)%20 < 12){
-                text("Point Blue ▶", 600, 400)
+                text("Point Blue ▶", 600, 300)
             } else {
                 fill(255, 0, 0, (20-(frameCount - roundFrame)%20)*31.8)
             }
         } else {
-            text(score2, 1000 , 100)
+            text(score2, 700 , 100)
         }
 
         
     } else if (frameCount - roundFrame == 60 || frameCount - roundFrame == 150){
-        reset()
+        if(frameCount - roundFrame == 60){
+            costumeChange()
+        }
+        if(frameCount - roundFrame == 150){
+            reset()
+        }
+        
         world.gravity.y = 35
     } else if (frameCount - roundFrame < 150){
         fill(0, 0, 0, min(25, 150-(frameCount - roundFrame))*5)
@@ -731,10 +755,10 @@ function draw(){
         text(Math.ceil((150 - (frameCount - roundFrame))/30), 600, 400)
         fill('red')
     
-        text(score1, 200, 100)
+        text(score1, 500, 100)
         fill('blue')
         
-        text(score2, 1000, 100)
+        text(score2, 700, 100)
     } else {
         
         renderRound()
