@@ -106,7 +106,7 @@ function setup(){
     lastCollide1 = 0
     lastCollide2 = 0
     ball.velocity.x = -15
-    ball.bounciness = 0.85
+    ball.bounciness = 0.92
     ball.mass = 10
     ball.drag = 0.5
     textAlign(CENTER)
@@ -216,7 +216,7 @@ function reset(){
     lastCollide2 = 0
     //wball.velocity.x = -15
     ball.velocity.y = 0
-    ball.bounciness = 0.85
+    ball.bounciness = 0.92
     ball.mass = 600
     ball.drag = 0.5 
     textAlign(CENTER)
@@ -258,14 +258,34 @@ function renderRound(){
     if(ball.collides(backarm1)){
         ballLastCollide = "LPADDLE"
         paddleSound.play()
-        if(ball.vel.y < -max(6, ((295 - backarm1.pos.x)/295)*15)){
-            ball.vel.y = -max(6, ((295 - backarm1.pos.x)/295)*15)
+        // if(ball.vel.y < -max(6, ((295 - backarm1.pos.x)/295)*15)){
+        //     ball.vel.y = -max(6, ((295 - backarm1.pos.x)/295)*15)
+        // }
+        
+        if(player1shot == "NORM" || player1shot == "NONE"){
+            ball.vel.x = map(300-backarm1.pos.x, 0, 300, 8, 23)
+            ball.vel.y = max(-12, ball.vel.y)
+        } else if (player1shot == "SMASH"){
+            ball.vel.x = map(300-backarm1.pos.x, 0, 300, 23, 23)
+            ball.vel.y = min(-3, ball.vel.y)
         }
-    } else if (ball.collides(backarm2)){
+           
+        //backarm1.rotation = 180
+        
+    } 
+    
+    if (ball.collides(backarm2)){
         ballLastCollide = "RPADDLE"
         paddleSound.play()
-        if(ball.vel.y < -max(6, ((backarm2.pos.x - 1065)/295)*15)){
-            ball.vel.y = -max(6, ((backarm2.pos.x - 1065)/295)*15)
+        // if(ball.vel.y < -max(6, ((backarm2.pos.x - 1065)/295)*15)){
+        //     ball.vel.y = -max(6, ((backarm2.pos.x - 1065)/295)*15)
+        // }
+        if(player2shot == "NORM" || player2shot == "NONE"){
+            ball.vel.x = -map(backarm2.pos.x-900, 0, 300, 8, 23)
+            ball.vel.y = max(-12, ball.vel.y)
+        } else if (player2shot == "SMASH"){
+            ball.vel.x = -map(backarm2.pos.x-900, 0, 300, 23, 23)
+            ball.vel.y = min(-3, ball.vel.y)
         }
     }
 
@@ -337,23 +357,19 @@ function renderRound(){
     //     ball.vel.x = -10
     // }
     ////ball.rotationSpeed = 50
-    ball.vel.limit(20)
+    //ball.vel.limit(20)
     
-    if(ball.vel.x > 0 && ball.vel.x < 10){
-        ball.vel.x = 10
-    }
-
-    if(ball.vel.x < 0 && ball.vel.x > -10){
-        ball.vel.x = -10
-    }
-
-    // if(ball.vel.y > 15){
-    //     ball.vel.y = 15
+    // if(ball.vel.x > 0 && ball.vel.x < 6){
+    //     ball.vel.x = 6
     // }
 
-    // if(ball.vel.y < -15){
-    //     ball.vel.y = -15
+    // if(ball.vel.x < 0 && ball.vel.x > -6){
+    //     ball.vel.x = -6
     // }
+
+    if(ball.vel.y < -12){
+        ball.vel.y = -12
+    }
 
     // if(ball.vel.x > 20){
     //     ball.vel.x = 20
@@ -367,7 +383,12 @@ function renderRound(){
     
     //console.log(backarm1.rotation, player1.rotation)
 
-    if(backarm1.rotation == 90 && player1shot == "NORM"){
+    // if(ballLastCollide != "LPADDLE"){
+        
+    // } else {
+    //     backarm1.rotation = 180
+    // }
+    if(backarm1.rotation == 90 && player1shot == "NORM" ){
         backarm1.rotate(90, 10)
         player1shot = "NONE"
     }
@@ -375,6 +396,7 @@ function renderRound(){
     if(backarm1.rotation == 180 && player1shot == "SMASH"){
         player1shot = "NONE"
     }
+    
 
     if(backarm2.rotation == -90 && player2shot == "NORM"){
         backarm2.rotate(-90, 10)
