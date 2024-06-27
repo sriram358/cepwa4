@@ -4,10 +4,9 @@ let backarm1, backarm2, forearm1, armjoint1, bodyjoint1, armjoint2, ball
 let pixelFont, tableSound, paddleSound, pianoSound
 let score1 = 0, score2 = 0
 let ballLastCollide = "NONE"
+let lastPlayer = 0
 let ballPosList = []
 let roundFrame = -60
-//let frameCount = 0;
-let changeFrame = -1000;
 let rotateDire1 = "left"
 let rotateDire2 = "right"
 let scored = "NONE"
@@ -16,18 +15,26 @@ let armRotation2 = 180
 let songPlaying = false
 let player1shot = "NONE", player2shot = "NONE"
 let trailList = []
-let gameStarted = false
+let gameStarted = false, controlScreen = false
 let playButton
 let playerImage, playerImage2, tableImage
 let costume1 = 1, costume2 = 2
+let powerup
+let powerType = 1, powerFrame = -1000
+let player1power = 0, player2power = 0
+let leftControlImage, rightControlImage
+let playClickedframe = -100
+let superSmash = 0
 function preload(){
-    pixelFont = loadFont("Overpass.ttf")
+    pixelFont = loadFont("PressStart.ttf")
     tableSound = loadSound("table.mp3")
     paddleSound = loadSound("paddle.mp3")
     pianoSound = loadSound("piano.mp3")
     playerImage = loadImage("assets/char1.png")
     playerImage2 = loadImage("assets/char1a.png")
     tableImage = loadImage("assets/table.png")
+    leftControlImage = loadImage("assets/leftcontrols.png")
+    rightControlImage = loadImage("assets/rightcontrols.png")
 
 }
 
@@ -36,19 +43,20 @@ function setup(){
     angleMode(DEGREES)
     
     playButton = new Sprite(600, 400, 200, 100)
-    playButton.textSize = 80
+    playButton.textSize = 80/2
     playButton.text = "Play!"
     playButton.visible = false
     playButton.collider = "kinematic"
-    player1 = new Sprite(100, 550-200, 50)
-    player2 = new Sprite(1100, 550-200, 50)
-    floor = new Sprite(600, 800-200, 1200, 4)
-    wall1 = new Sprite(0, 400-200, 4, 800)
-    wall2 = new Sprite(1200, 400-200, 4, 800)
-    table = new Sprite(600, 790-200, 625, 150)
-    net = new Sprite(600, 705-200, 8, 20)
-    ball = new Sprite(800, 540-200, 20)
-    
+    player1 = new Sprite(100, 350, 50)
+    player2 = new Sprite(1100, 350, 50)
+    floor = new Sprite(600, 600, 1200, 4)
+    wall1 = new Sprite(0, 200, 4, 800)
+    wall2 = new Sprite(1200, 200, 4, 800)
+    table = new Sprite(600, 590, 625, 150)
+    net = new Sprite(600, 505, 8, 20)
+    ball = new Sprite(800, 340, 20)
+    powerup = new Sprite(600, 400, 30)
+    powerup.collider = "none"
     
     backarm1 = new Sprite(100, 400-200, 30, 115)
     backarm1.offset.y = -50
@@ -82,6 +90,7 @@ function setup(){
     net.visible = false
     backarm1.visible = false
     backarm2.visible = false
+    powerup.visible = false
     player1.d = 50
     player2.d = 50
     player1.rotation = 0
@@ -112,11 +121,16 @@ function setup(){
     ball.color = "white"
     ball.mass = 10
     ball.drag = 0.5
+    
     table.img = `assets/table.png`
     table.img.offset.y = -330
     table.img.scale.x = 0.7
     table.img.scale.y = 0.6
+    powerup.img = `assets/power${powerType}.png`
+    powerup.img.scale = 0.5
     textAlign(CENTER)
+    leftControlImage.resize(500, 500)
+    rightControlImage.resize(500, 500)
 }
 
 function drawPlayer1(){
@@ -152,7 +166,16 @@ function drawPlayer2(){
 function drawBall(){
     strokeWeight(2)
     stroke("black")
-    fill("white")
+    if(superSmash == 0){
+        fill("white")
+        ball.color = "white"
+    } else {
+        fill("orange")
+        ball.color = "orange"
+    }
+
+
+    
     circle(ball.pos.x, ball.pos.y, 20)
 }
 
@@ -207,8 +230,9 @@ function costumeChange(){
 }
 
 function reset(){
-
-    
+    // frameCount = 0
+    // roundFrame = 0
+    lastPlayer = 0
     trailList = []
     ballLastCollide = "NONE"
     backarm1.rotation = 180
@@ -268,10 +292,40 @@ function renderRound(){
     renderArm2()
     drawTable()
 
-    textFont(pixelFont, 30)
-    fill('black')
+    textFont(pixelFont, 60/2)
+    if(frameCount%20 > 10){
+        fill('orange')
+    } else {
+        fill(0, 0)
+    }
+    
+    if(player1power == 1){
+        text(`Super Smash!`, 200, 100)
+        text(`▼`, 200, 150)
+    } else if (player2power == 1){
+        text(`Super Smash!`, 1000, 100)
+        text(`▼`, 1000, 150)
+    }
 
-    //text(`Ball Speed: ${Math.floor(ball.vel.mag())}`, 600, 600)
+    
+
+    if(frameCount - powerFrame > 300){
+        powerup.visible = false
+        if(frameCount - powerFrame > 400 && Math.floor(random(0, 600)) == 0){
+            powerFrame = frameCount
+        }
+    } else {
+        powerup.visible = true
+        if(ball.overlaps(powerup)){
+            if(lastPlayer == 1){
+                player1power = powerType
+                powerFrame -= 300
+            } else if (lastPlayer == 2){
+                player2power = powerType
+                powerFrame -= 300
+            }
+        }
+    }
 
     trailList.push(new Trail(ball.pos.x, ball.pos.y, ball.vel.x, ball.vel.y))
 
@@ -286,17 +340,30 @@ function renderRound(){
 
     if(ball.collides(backarm1)){
         ballLastCollide = "LPADDLE"
+        lastPlayer = 1
         paddleSound.play()
         // if(ball.vel.y < -max(6, ((295 - backarm1.pos.x)/295)*15)){
         //     ball.vel.y = -max(6, ((295 - backarm1.pos.x)/295)*15)
         // }
+
+        if(superSmash == 2){
+            superSmash = 0
+        }
         
         if(player1shot == "NORM" || player1shot == "NONE"){
             ball.vel.x = map(300-backarm1.pos.x, 0, 300, 8, 18)
             ball.vel.y = max(-12, ball.vel.y)
         } else if (player1shot == "SMASH"){
-            ball.vel.x = map(300-backarm1.pos.x, 0, 300, 23, 23)
+            ball.vel.x = 23
             ball.vel.y = min(0, ball.vel.y)
+
+            if(player1power == 1){
+                ball.vel.mult(2)
+                player1power = 0
+                ball.vel.y = ball.vel.y + 8
+                superSmash = 1
+            }
+            
         }
            
         //backarm1.rotation = 180
@@ -305,16 +372,27 @@ function renderRound(){
     
     if (ball.collides(backarm2)){
         ballLastCollide = "RPADDLE"
+        lastPlayer = 2
         paddleSound.play()
         // if(ball.vel.y < -max(6, ((backarm2.pos.x - 1065)/295)*15)){
         //     ball.vel.y = -max(6, ((backarm2.pos.x - 1065)/295)*15)
         // }
+
+        if(superSmash == 1){
+            superSmash = 0
+        }
         if(player2shot == "NORM" || player2shot == "NONE"){
             ball.vel.x = -map(backarm2.pos.x-900, 0, 300, 8, 18)
             ball.vel.y = max(-12, ball.vel.y)
         } else if (player2shot == "SMASH"){
-            ball.vel.x = -map(backarm2.pos.x-900, 0, 300, 23, 23)
+            ball.vel.x = -23
             ball.vel.y = min(0, ball.vel.y)
+
+            if(player2power == 1){
+                ball.vel.mult(2)
+                player2power = 0
+                superSmash = 2
+            }
         }
     }
 
@@ -665,32 +743,65 @@ function draw(){
         songPlaying = true
         //pianoSound.play()
     }
-    textFont(pixelFont, 120)
+    textFont(pixelFont, 120/2)
+    powerup.pos.y = 400 + 70*Math.sin(frameCount/20)
+
+    
     // drawBall()
     if(gameStarted == false){
-        fill(20)
-        frameCount -= 1
-        rect(0, 0, 1200, 800)
-        drawTable()
-        playButton.draw()
-        fill(255)
-        textStyle(pixelFont, 20)
-        textSize(120)
-        text("Pong Random!", 600, 200)
-        textStyle(pixelFont, 50)
-        textSize(50)
-        text("Game by V Sriram", 600, 700)
-        //image(playerImage, 200, 400)
-        if(mouse.pressing()){
-            gameStarted = true
-            playButton.visible = false
-            playButton.collider = "none"
-            console.log("aarmabikalaam")
-            table.visible = false
-            net.visible = true
-            backarm1.visible = true
-            backarm2.visible = true
+        if(controlScreen == false){
+            fill(20)
+            //frameCount -= 1
+            rect(0, 0, 1200, 800)
+            drawTable()
+            playButton.draw()
+            fill(255)
+            textStyle(pixelFont, 20)
+            textSize(80)
+            text("Pong Random!", 600, 200)
+            textStyle(pixelFont, 50)
+            textSize(50)
+            text("Game by V Sriram", 600, 700)
+            //image(playerImage, 200, 400)
+            if(mouse.pressing() && playButton.mouse.pressing()){
+                //gameStarted = true
+                controlScreen = true
+                playClickedframe = frameCount
+                // playButton.visible = false
+                // playButton.collider = "none"
+                // console.log("aarmabikalaam")
+                // table.visible = false
+                // net.visible = true
+                // backarm1.visible = true
+                // backarm2.visible = true
+            }
+        } else {
+            fill(20)
+            //frameCount -= 1
+            rect(0, 0, 1200, 800)
+            fill(255)
+            text("Controls", 600, 100)
+            image(leftControlImage, 20, 150)
+            image(rightControlImage, 680, 150)
+            playButton.text = "OK!"
+            playButton.y = 500
+            if(mouse.pressing() && playButton.mouse.pressing() && frameCount - playClickedframe > 2){
+                gameStarted = true
+                controlScreen = false
+                playButton.visible = false
+                playButton.collider = "none"
+                console.log("aarmabikalaam")
+                table.visible = false
+                net.visible = true
+                backarm1.visible = true
+                backarm2.visible = true
+                frameCount = 0
+                roundFrame = -60
+            }
+    
         }
+        
+        
 
     } else if(frameCount - roundFrame < 60){
         drawBall()
@@ -762,7 +873,7 @@ function draw(){
     } else {
         
         renderRound()
-        textFont(pixelFont, 120)
+        textFont(pixelFont, 120/2)
         if(frameCount - roundFrame < 210 && frameCount - roundFrame > 2){
             fill(0, 0, 0, (210-(frameCount - roundFrame))*4.25)
             text("Play!", 600, 400)
