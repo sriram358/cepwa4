@@ -310,7 +310,7 @@ function renderRound(){
     drawTable()
 
     textFont(pixelFont, 60/2)
-    if(frameCount%10 > 5){
+    if(frameCount%20 > 10){
         fill('orange')
     } else {
         fill(0, 0)
