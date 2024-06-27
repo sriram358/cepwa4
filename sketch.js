@@ -14,7 +14,7 @@ let armRotation1 = 180
 let armRotation2 = 180
 let songPlaying = false
 let player1shot = "NONE", player2shot = "NONE"
-let trailList = []
+let trailList = [], windList = []
 let gameStarted = false, controlScreen = false
 let playButton
 let playerImage, playerImage2, tableImage
@@ -26,6 +26,8 @@ let leftControlImage, rightControlImage
 let playClickedframe = -100
 let superSmash = 0
 let floorMode = 1
+let windMode = 0
+let windSpeed
 function preload(){
     pixelFont = loadFont("PressStart.ttf")
     tableSound = loadSound("table.mp3")
@@ -123,6 +125,7 @@ function setup(){
     ball.color = "white"
     ball.mass = 10
     ball.drag = 0.5
+    windSpeed = 0
     
     table.img = `assets/table.png`
     table.img.offset.y = -330
@@ -233,13 +236,32 @@ function costumeChange(){
     player2.pos = createVector(1000, 550-200)
     player1.vel.x = 0
     player2.vel.x = 0
+    let nn = Math.floor(random(0, 2))
+    
+    nn = Math.floor(random(0, 3))
+    console.log(floorMode)
+    if(nn == 0){
+        floorMode = 0
+    } else {
+        floorMode = 1
+    }
+
+    nn = Math.floor(random(0, 3))
+    //console.log(floorMode)
+    if(nn == 0){
+        windMode = 1
+    } else {
+        windMode = 0
+    }
 }
 
 function reset(){
     // frameCount = 0
     // roundFrame = 0
     lastPlayer = 0
+   
     trailList = []
+    windList = []
     ballLastCollide = "NONE"
     backarm1.rotation = 180
     backarm2.rotation = 180
@@ -250,13 +272,6 @@ function reset(){
     } else {
         ball.pos = createVector(400, 540-200)
         ball.velocity.x = 15
-    }
-    nn = Math.floor(random(0, 3))
-    console.log(floorMode)
-    if(nn == 0){
-        floorMode = 0
-    } else {
-        floorMode = 1
     }
     player1.pos = createVector(200, 550-200)
     player2.pos = createVector(1000, 550-200)
@@ -290,6 +305,9 @@ function reset(){
     textAlign(CENTER)
     superSmash = 0
     
+    player1power = 0
+    player2power = 0
+    
 }
 
 function renderRound(){
@@ -308,6 +326,8 @@ function renderRound(){
     renderArm1()
     renderArm2()
     drawTable()
+
+    //ball.vel.x += 0.05
 
     textFont(pixelFont, 60/2)
     if(frameCount%20 > 10){
@@ -347,6 +367,8 @@ function renderRound(){
 
     trailList.push(new Trail(ball.pos.x, ball.pos.y, ball.vel.x, ball.vel.y))
 
+    
+
     for(let i = 0; i < trailList.length; i++){
         trailList[i].age -= 1
         if(trailList[i].age <= 0){
@@ -355,6 +377,24 @@ function renderRound(){
             trailList[i].draw()
         }
     }
+
+    //CHANGE THIS 
+    
+    if(windMode == 1){
+        
+        windSpeed = map(noise(frameCount/200), 0, 1, -2, 2)
+        ball.vel.x += windSpeed/10
+        windList.push(new Wind())
+
+        for(let i = 0; i < windList.length; i++){
+            if(windList[i].age <= 0){
+                windList.splice(i, 1)
+            } else {
+                windList[i].draw()
+            }
+        }
+    }
+    
 
     if(ball.collides(backarm1)){
         ballLastCollide = "LPADDLE"
@@ -969,9 +1009,19 @@ function draw(){
         
         text(score2, 700, 100)
         fill("yellow")
+        textFont(pixelFont, 80/2)
+        let descText = ""
         if(floorMode == 0){
-            text("Slippery", 600, 200)
+            descText += "Slippery"
         }
+        if(windMode == 1){
+            if(descText != ""){
+                descText += " + "
+            } 
+            descText += "Windy"
+        }
+
+        text(descText, 600, 200)
     } else {
         
         renderRound()

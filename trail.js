@@ -8,9 +8,9 @@ class Trail{
 
     draw(){
         if(superSmash == 0){
-            fill("white")
+            fill(255, 125)
         } else {
-            fill(min(200, 210 - (this.age*12)))
+            fill(min(200, 210 - (this.age*12)), 125)
         }
         
         noStroke()
