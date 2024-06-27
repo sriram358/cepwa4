@@ -1,7 +1,7 @@
 let player1body, player1head, player1, player2body, player2head, player2, floor, ampl1, ampl2, collisionFrame1, collisionFrame2, lastCollide1, lastCollide2, initRotation1, initRotation2, wall1, wall2, table, net
 
 let backarm1, backarm2, forearm1, armjoint1, bodyjoint1, armjoint2, ball
-let pixelFont, tableSound, paddleSound, pianoSound
+let pixelFont, tableSound, paddleSound, pianoSound, fireSound
 let score1 = 0, score2 = 0
 let ballLastCollide = "NONE"
 let lastPlayer = 0
@@ -25,11 +25,13 @@ let player1power = 0, player2power = 0
 let leftControlImage, rightControlImage
 let playClickedframe = -100
 let superSmash = 0
+let floorMode = 1
 function preload(){
     pixelFont = loadFont("PressStart.ttf")
     tableSound = loadSound("table.mp3")
     paddleSound = loadSound("paddle.mp3")
     pianoSound = loadSound("piano.mp3")
+    fireSound = loadSound("fire.mp3")
     playerImage = loadImage("assets/char1.png")
     playerImage2 = loadImage("assets/char1a.png")
     tableImage = loadImage("assets/table.png")
@@ -99,8 +101,8 @@ function setup(){
     player2.bounciness = 0
     player1.rotationLock = true
     player2.rotationLock = true
-    player1.friction = 1000
-    player2.friction = 1000
+    player1.friction = 1
+    player2.friction = 1
     player1.visible = true
     player2.visible = true
     ball.visible = true
@@ -108,7 +110,7 @@ function setup(){
     player2.rotationDrag = 100
     // player1.addCollider(0,-125, 50, 200)
     // player2.addCollider(0,-125, 50, 200)
-    floor.friction = 100
+    floor.friction = 1
     world.gravity.y = 35
     ampl1 = 3
     ampl2 = 3
@@ -227,6 +229,10 @@ function renderBallTrail(){
 function costumeChange(){
     costume1 = Math.floor(random(1, 6))
     costume2 = Math.floor(random(1, 6))
+    player1.pos = createVector(200, 550-200)
+    player2.pos = createVector(1000, 550-200)
+    player1.vel.x = 0
+    player2.vel.x = 0
 }
 
 function reset(){
@@ -245,6 +251,13 @@ function reset(){
         ball.pos = createVector(400, 540-200)
         ball.velocity.x = 15
     }
+    nn = Math.floor(random(0, 3))
+    console.log(floorMode)
+    if(nn == 0){
+        floorMode = 0
+    } else {
+        floorMode = 1
+    }
     player1.pos = createVector(200, 550-200)
     player2.pos = createVector(1000, 550-200)
     player1.vel.x = 0
@@ -259,6 +272,9 @@ function reset(){
     player1.visible = true
     player2.visible = true
     ball.visible = true
+    player1.friction = floorMode
+    player2.friction = floorMode
+    floor.friction = floorMode
     
     ampl1 = 3
     ampl2 = 3
@@ -272,6 +288,7 @@ function reset(){
     ball.mass = 600
     ball.drag = 0.5 
     textAlign(CENTER)
+    superSmash = 0
     
 }
 
@@ -293,7 +310,7 @@ function renderRound(){
     drawTable()
 
     textFont(pixelFont, 60/2)
-    if(frameCount%20 > 10){
+    if(frameCount%10 > 5){
         fill('orange')
     } else {
         fill(0, 0)
@@ -302,7 +319,8 @@ function renderRound(){
     if(player1power == 1){
         text(`Super Smash!`, 200, 100)
         text(`▼`, 200, 150)
-    } else if (player2power == 1){
+    } 
+    if (player2power == 1){
         text(`Super Smash!`, 1000, 100)
         text(`▼`, 1000, 150)
     }
@@ -311,7 +329,7 @@ function renderRound(){
 
     if(frameCount - powerFrame > 300){
         powerup.visible = false
-        if(frameCount - powerFrame > 400 && Math.floor(random(0, 600)) == 0){
+        if(frameCount - powerFrame > 400 && Math.floor(random(0, 400)) == 0){
             powerFrame = frameCount
         }
     } else {
@@ -355,10 +373,12 @@ function renderRound(){
             ball.vel.y = max(-12, ball.vel.y)
         } else if (player1shot == "SMASH"){
             ball.vel.x = 23
+            ball.pos.x += 40
             ball.vel.y = min(0, ball.vel.y)
 
             if(player1power == 1){
                 ball.vel.mult(2)
+                fireSound.play()
                 player1power = 0
                 ball.vel.y = ball.vel.y + 8
                 superSmash = 1
@@ -386,11 +406,14 @@ function renderRound(){
             ball.vel.y = max(-12, ball.vel.y)
         } else if (player2shot == "SMASH"){
             ball.vel.x = -23
+            ball.pos.x -= 40
             ball.vel.y = min(0, ball.vel.y)
 
             if(player2power == 1){
                 ball.vel.mult(2)
+                fireSound.play()
                 player2power = 0
+                ball.vel.y = ball.vel.y + 8
                 superSmash = 2
             }
         }
@@ -602,6 +625,47 @@ function renderRound(){
     } 
 
     if(kb.pressing('w')){
+        if(kb.presses('d')){
+            if(armRotation1 > 0){
+                backarm1.rotation = 180
+                backarm1.rotate(-90, 10)
+                player1shot = "NORM"
+                
+                
+                if(backarm1.rotation <= -90){
+                    armRotation1 = backarm1.rotation + 360
+                } else {
+                    armRotation1 = backarm1.rotation
+                }
+                
+                
+            } else {
+                if(backarm1.rotation <= -90){
+                    armRotation1 = backarm1.rotation + 360
+                } else {
+                    armRotation1 = backarm1.rotation
+                }
+                backarm1.rotation = armRotation1
+            } 
+            
+        } 
+    
+        if(kb.presses('e')){
+            
+            backarm1.rotation = 0
+            backarm1.rotate(180, 10)
+            player1shot = "SMASH"
+            
+            
+            if(backarm1.rotation <= -90){
+                armRotation1 = backarm1.rotation + 360
+            } else {
+                armRotation1 = backarm1.rotation
+            }
+                
+            
+            
+        } 
         if(player1.pos.y > 725-200 && kb.pressing('w') < 10){
             player1.pos.y -= 2
             player1.velocity.y -= abs(1.35*Math.cos(radians(player2.rotation)))
@@ -616,6 +680,40 @@ function renderRound(){
     
 
     if(kb.pressing('o')){
+        if(kb.presses('j')){
+        
+            backarm2.rotation = -180
+            backarm2.rotate(90, 10)
+            player2shot = "NORM"
+            
+            
+            if(backarm2.rotation <= -90){
+                armRotation2 = backarm2.rotation + 360
+            } else {
+                armRotation2 = backarm2.rotation
+            }
+                
+                
+            
+            
+        } 
+    
+        if(kb.presses('i')){
+            
+            backarm2.rotation = 0
+            backarm2.rotate(-180, 10)
+            player2shot = "SMASH"
+            
+            
+            if(backarm2.rotation <= -90){
+                armRotation2 = backarm2.rotation + 360
+            } else {
+                armRotation2 = backarm2.rotation
+            }
+                
+            
+            
+        } 
         if(player2.pos.y > 725-200 && kb.pressing('o') < 10){
             player2.pos.y -= 2
             player2.velocity.y -= abs(1.35*Math.cos(radians(player2.rotation)))
@@ -870,6 +968,10 @@ function draw(){
         fill('blue')
         
         text(score2, 700, 100)
+        fill("yellow")
+        if(floorMode == 0){
+            text("Slippery", 600, 200)
+        }
     } else {
         
         renderRound()
