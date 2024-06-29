@@ -27,13 +27,15 @@ let playClickedframe = -100
 let superSmash = 0
 let floorMode = 1
 let windMode = 0
-let windSpeed
+let windSpeed, windSound
+let windFrame = -10000
 function preload(){
     pixelFont = loadFont("PressStart.ttf")
     tableSound = loadSound("table.mp3")
     paddleSound = loadSound("paddle.mp3")
     pianoSound = loadSound("piano.mp3")
     fireSound = loadSound("fire.mp3")
+    windSound = loadSound("wind.mp3")
     playerImage = loadImage("assets/char1.png")
     playerImage2 = loadImage("assets/char1a.png")
     tableImage = loadImage("assets/table.png")
@@ -230,6 +232,8 @@ function renderBallTrail(){
 }
 
 function costumeChange(){
+    windFrame = -10000
+    windSound.stop()
     costume1 = Math.floor(random(1, 6))
     costume2 = Math.floor(random(1, 6))
     player1.pos = createVector(200, 550-200)
@@ -382,6 +386,10 @@ function renderRound(){
     
     if(windMode == 1){
         
+        if(frameCount-windFrame >= 1944){
+            windFrame = frameCount
+            windSound.play()
+        }
         windSpeed = map(noise(frameCount/200), 0, 1, -2, 2)
         ball.vel.x += windSpeed/10
         windList.push(new Wind())
