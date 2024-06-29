@@ -15,7 +15,7 @@ let armRotation2 = 180
 let songPlaying = false
 let player1shot = "NONE", player2shot = "NONE"
 let trailList = [], windList = []
-let gameStarted = false, controlScreen = false
+let gameStarted = false, controlScreen = false, winScreen = false
 let playButton
 let playerImage, playerImage2, tableImage
 let costume1 = 1, costume2 = 2
@@ -29,6 +29,8 @@ let floorMode = 1
 let windMode = 0
 let windSpeed, windSound
 let windFrame = -10000
+let bounceMode = 1, netMode = 1;
+let endFrame = -10000
 function preload(){
     pixelFont = loadFont("PressStart.ttf")
     tableSound = loadSound("table.mp3")
@@ -58,7 +60,9 @@ function setup(){
     floor = new Sprite(600, 600, 1200, 4)
     wall1 = new Sprite(0, 200, 4, 800)
     wall2 = new Sprite(1200, 200, 4, 800)
-    table = new Sprite(600, 590, 625, 150)
+    table = new Sprite(600, 590, 575, 150)
+    strokeWeight(1)
+    stroke(0)
     net = new Sprite(600, 505, 8, 20)
     ball = new Sprite(800, 340, 20)
     powerup = new Sprite(600, 400, 30)
@@ -123,7 +127,7 @@ function setup(){
     lastCollide1 = 0
     lastCollide2 = 0
     ball.velocity.x = -15
-    ball.bounciness = 0.92
+    ball.bounciness = 0.85
     ball.color = "white"
     ball.mass = 10
     ball.drag = 0.5
@@ -131,7 +135,7 @@ function setup(){
     
     table.img = `assets/table.png`
     table.img.offset.y = -330
-    table.img.scale.x = 0.7
+    table.img.scale.x = 0.63
     table.img.scale.y = 0.6
     powerup.img = `assets/power${powerType}.png`
     powerup.img.scale = 0.5
@@ -232,6 +236,12 @@ function renderBallTrail(){
 }
 
 function costumeChange(){
+    if(score1 >= 5 || score2 >= 5){
+        gameStarted = false
+        winScreen = true
+        endFrame = frameCount
+        return
+    }
     windFrame = -10000
     windSound.stop()
     costume1 = Math.floor(random(1, 6))
@@ -242,7 +252,7 @@ function costumeChange(){
     player2.vel.x = 0
     let nn = Math.floor(random(0, 2))
     
-    nn = Math.floor(random(0, 3))
+    nn = Math.floor(random(0, 2))
     console.log(floorMode)
     if(nn == 0){
         floorMode = 0
@@ -250,12 +260,43 @@ function costumeChange(){
         floorMode = 1
     }
 
-    nn = Math.floor(random(0, 3))
+    nn = Math.floor(random(0, 2))
     //console.log(floorMode)
     if(nn == 0){
         windMode = 1
     } else {
         windMode = 0
+    }
+
+    nn = Math.floor(random(0, 3))
+    if(nn == 0){
+        bounceMode = 1
+    } else if (nn == 1) {
+        bounceMode = 2
+    } else {
+        bounceMode = 0
+    }
+
+    nn = Math.floor(random(0, 4))
+    if(nn == 0){
+        netMode = 1
+    } else if (nn == 1) {
+        netMode = 2
+    } else if (nn == 2){
+        netMode = 0
+    } else {
+        netMode = 3
+    }
+    
+    if(netMode == 0){
+        net.pos.y = 505 + 5
+        net.height = 20-10
+    } else if (netMode == 2){
+        net.pos.y = 505 - 5
+        net.height = 20+10
+    } else {
+        net.pos.y = 505
+        net.height = 20
     }
 }
 
@@ -303,7 +344,14 @@ function reset(){
     lastCollide2 = 0
     //wball.velocity.x = -15
     ball.velocity.y = 0
-    ball.bounciness = 0.92
+    if(bounceMode == 0){
+        ball.bounciness = 0.7
+    } else if (bounceMode == 1){
+        ball.bounciness = 0.85
+    } else {
+        ball.bounciness = 0.99
+    }
+    //ball.bounciness = 0.92
     ball.mass = 600
     ball.drag = 0.5 
     textAlign(CENTER)
@@ -315,8 +363,16 @@ function reset(){
 }
 
 function renderRound(){
-    noStroke()
+    //noStroke()
     background(200)
+    if(floorMode == 0){
+        fill(194, 232, 255)
+        noStroke()
+        rect(0, 550, 1200, 50)
+        
+        strokeWeight(1)
+        stroke(0)
+    }
     drawBall()
     //renderBallTrail()
     fill('red')
@@ -384,6 +440,7 @@ function renderRound(){
 
     //CHANGE THIS 
     
+    
     if(windMode == 1){
         
         if(frameCount-windFrame >= 1944){
@@ -403,6 +460,11 @@ function renderRound(){
         }
     }
     
+    if(netMode == 3){
+        let netDev = map(Math.sin(frameCount/20), -1, 1, -10, 10)
+        net.height = 20 + netDev
+        net.pos.y = 505 - netDev/2
+    }
 
     if(ball.collides(backarm1)){
         ballLastCollide = "LPADDLE"
@@ -883,7 +945,7 @@ function draw(){
     drawPlayer1()
     drawPlayer2()
     renderArm1()
-    renderArm2()
+    renderArm2() 
     drawTable()
     if(!songPlaying){
         songPlaying = true
@@ -895,7 +957,8 @@ function draw(){
     
     // drawBall()
     if(gameStarted == false){
-        if(controlScreen == false){
+        if(controlScreen == false && winScreen == false){
+            
             fill(20)
             //frameCount -= 1
             rect(0, 0, 1200, 800)
@@ -920,6 +983,19 @@ function draw(){
                 // net.visible = true
                 // backarm1.visible = true
                 // backarm2.visible = true
+            }
+        } else if (winScreen == true){
+            fill(0, 0, 0, min(200, (frameCount-endFrame)*5))
+            rect(0, 0, 1200, 800)
+            textStyle(pixelFont, 20)
+            textSize(80)
+
+            if(score1 > score2){
+                fill(255, 0, 0, min(255, (frameCount-endFrame)*5))
+                text("Red Wins!", 600, 300)
+            } else {
+                fill(0, 0, 255, min(255, (frameCount-endFrame)*5))
+                text("Blue Wins!", 600, 300)
             }
         } else {
             fill(20)
@@ -958,12 +1034,23 @@ function draw(){
         } else if(ball.collides(table) || ball.collides(floor)){
             tableSound.play()
         }
+        
+        if(floorMode == 0){
+            fill(194, 232, 255)
+            noStroke()
+            rect(0, 550, 1200, 50)
+            
+            strokeWeight(1)
+            stroke(0)
+        }
         fill(200)
         noStroke()
         rect(0, 0, 1200, 400)
         fill(200)
         noStroke()
         rect(0, 150, 1200, 200)
+        strokeWeight(1)
+        stroke(0)
         
         fill('red')
         if(scored == "LEFT"){
@@ -1003,6 +1090,14 @@ function draw(){
         
         world.gravity.y = 35
     } else if (frameCount - roundFrame < 150){
+        if(floorMode == 0){
+            fill(194, 232, 255)
+            noStroke()
+            rect(0, 550, 1200, 50)
+            
+            strokeWeight(1)
+            stroke(0)
+        }
         fill(0, 0, 0, min(25, 150-(frameCount - roundFrame))*5)
         rect(0, 0, 1200, 800)
         world.gravity.y = 0
@@ -1016,18 +1111,56 @@ function draw(){
         fill('blue')
         
         text(score2, 700, 100)
-        fill("yellow")
-        textFont(pixelFont, 80/2)
+        
         let descText = ""
+        let wordCount = 0
         if(floorMode == 0){
             descText += "Slippery"
+            wordCount += 1
         }
         if(windMode == 1){
             if(descText != ""){
                 descText += " + "
             } 
             descText += "Windy"
+            wordCount += 1
         }
+        if(bounceMode == 0){
+            if(descText != ""){
+                descText += " + "
+            } 
+            descText += "Low Bounce"
+            wordCount += 1
+        } else if (bounceMode == 2){
+            if(descText != ""){
+                descText += " + "
+            } 
+            descText += "High Bounce"
+            wordCount += 1
+        }
+
+        if(netMode == 0){
+            if(descText != ""){
+                descText += " + "
+            } 
+            descText += "Short Net"
+            wordCount += 1
+        } else if (netMode == 2){
+            if(descText != ""){
+                descText += " + "
+            } 
+            descText += "Tall Net"
+            wordCount += 1
+        } else if (netMode == 3){
+            if(descText != ""){
+                descText += " + "
+            } 
+            descText += "Moving Net"
+            wordCount += 1
+        }
+
+        fill("yellow")
+        textFont(pixelFont, (90-(wordCount*10))/2)
 
         text(descText, 600, 200)
     } else {
@@ -1036,7 +1169,9 @@ function draw(){
         textFont(pixelFont, 120/2)
         if(frameCount - roundFrame < 210 && frameCount - roundFrame > 2){
             fill(0, 0, 0, (210-(frameCount - roundFrame))*4.25)
+            stroke(0, 0, 0, (210-(frameCount - roundFrame))*4.25)
             text("Play!", 600, 400)
+            stroke(0)
         }
     }
     

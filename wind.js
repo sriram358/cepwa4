@@ -13,6 +13,7 @@ class Wind{
         }
         
         this.x += windSpeed*2
+        stroke(0)
         
     }
 }

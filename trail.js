@@ -17,5 +17,7 @@ class Trail{
         let posChange = (this.spe.normalize()).mult((15-this.age))
         //let posChange = createVector(0, 0)
         circle(this.x - posChange.x, this.y - posChange.y, this.age*4/3)
+        strokeWeight(1)
+        stroke(0)
     }
 }
