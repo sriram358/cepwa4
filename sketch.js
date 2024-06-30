@@ -43,6 +43,7 @@ function preload(){
     pianoSound = loadSound("music.mp3")
     fireSound = loadSound("fire.mp3")
     windSound = loadSound("wind.mp3")
+    windSound.setVolume(0.5)
     powerSound = loadSound("powerup.mp3")
     playerImage = loadImage("assets/char1.png")
     playerImage2 = loadImage("assets/char1a.png")
@@ -912,7 +913,7 @@ function renderRound(){
             if(player1.rotation > 0){
                 collisionFrame1 = 0
             } else {
-                collisionFrame1 = Math.PI*8
+                collisionFrame1 = Math.PI*6
             }
             ampl1 = abs(player1.rotation/5)
             ampl1 += min(0.1, max(2, ampl1)/20)
@@ -945,7 +946,7 @@ function renderRound(){
             if(player2.rotation < 0){
                 collisionFrame2 = 0
             } else {
-                collisionFrame2 = Math.PI*8
+                collisionFrame2 = Math.PI*6
             }
             ampl2 = abs(player2.rotation/5)
             ampl2 += min(0.1, max(2, ampl2)/20)
@@ -957,14 +958,15 @@ function renderRound(){
     
 
 
-    player1.rotation = 5*ampl1*Math.cos(collisionFrame1/8)
-    player2.rotation = -5*ampl2*Math.cos(collisionFrame2/8)
+    player1.rotation = 5*ampl1*Math.cos(collisionFrame1/6)
+    player2.rotation = -5*ampl2*Math.cos(collisionFrame2/6)
     
     //player1head.rotateTowards(200, 400, 0.1, 0)
 }
 
 function draw(){
     if(musicTime == 0 || millis() - musicTime > 5*60*1000){
+        pianoSound.setVolume(0.5)
         pianoSound.play()
         musicTime = millis()
     }
