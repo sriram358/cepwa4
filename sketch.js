@@ -31,18 +31,26 @@ let windSpeed, windSound
 let windFrame = -10000
 let bounceMode = 1, netMode = 1;
 let endFrame = -10000
+let powerSound
+let bounceFrame = -1000 
+let backgroundImages = []
+let floorImages = []
+let musicTime = 0
 function preload(){
     pixelFont = loadFont("PressStart.ttf")
     tableSound = loadSound("table.mp3")
     paddleSound = loadSound("paddle.mp3")
-    pianoSound = loadSound("piano.mp3")
+    pianoSound = loadSound("music.mp3")
     fireSound = loadSound("fire.mp3")
     windSound = loadSound("wind.mp3")
+    powerSound = loadSound("powerup.mp3")
     playerImage = loadImage("assets/char1.png")
     playerImage2 = loadImage("assets/char1a.png")
     tableImage = loadImage("assets/table.png")
     leftControlImage = loadImage("assets/leftcontrols.png")
     rightControlImage = loadImage("assets/rightcontrols.png")
+    backgroundImages.push(loadImage("assets/back1.png"))
+    floorImages.push(loadImage("assets/floor1.png"))
 
 }
 
@@ -135,13 +143,14 @@ function setup(){
     
     table.img = `assets/table.png`
     table.img.offset.y = -330
-    table.img.scale.x = 0.63
+    table.img.scale.x = 0.61
     table.img.scale.y = 0.6
     powerup.img = `assets/power${powerType}.png`
     powerup.img.scale = 0.5
     textAlign(CENTER)
     leftControlImage.resize(500, 500)
     rightControlImage.resize(500, 500)
+    
 }
 
 function drawPlayer1(){
@@ -240,6 +249,8 @@ function costumeChange(){
         gameStarted = false
         winScreen = true
         endFrame = frameCount
+        windFrame = -10000
+        windSound.stop()
         return
     }
     windFrame = -10000
@@ -364,11 +375,18 @@ function reset(){
 
 function renderRound(){
     //noStroke()
-    background(200)
+    background(191, 164, 113)
+    rect(0, 0, 1200, 800)
+    for(let i = 0; i < 12; i++){
+        image(backgroundImages[0], i*100, 0)
+    }
+    for(let i = 0; i < 12; i++){
+        image(floorImages[0], i*100, 512)
+    }
     if(floorMode == 0){
         fill(194, 232, 255)
         noStroke()
-        rect(0, 550, 1200, 50)
+        rect(0, 512, 1200, 88)
         
         strokeWeight(1)
         stroke(0)
@@ -422,6 +440,7 @@ function renderRound(){
                 player2power = powerType
                 powerFrame -= 300
             }
+            powerSound.play()
         }
     }
 
@@ -941,7 +960,13 @@ function renderRound(){
 }
 
 function draw(){
+    if(musicTime == 0 || millis() - musicTime > 5*60*1000){
+        pianoSound.play()
+        musicTime = millis()
+    }
+    
     background(200)
+    
     drawPlayer1()
     drawPlayer2()
     renderArm1()
@@ -958,17 +983,28 @@ function draw(){
     // drawBall()
     if(gameStarted == false){
         if(controlScreen == false && winScreen == false){
-            
-            fill(20)
+            //ball.bounciness = 0.9
+
+            fill(0, 0, 0, 190)
             //frameCount -= 1
+            
+            for(let i = 0; i < 12; i++){
+                image(backgroundImages[0], i*100, 0)
+            }
+            for(let i = 0; i < 12; i++){
+                image(floorImages[0], i*100, 512)
+            }
+            //rect(0, 0, 1200, 330)
+            
             rect(0, 0, 1200, 800)
+            
             drawTable()
             playButton.draw()
             fill(255)
-            textStyle(pixelFont, 20)
+            textFont(pixelFont, 20)
             textSize(80)
             text("Pong Random!", 600, 200)
-            textStyle(pixelFont, 50)
+            textFont(pixelFont, 50)
             textSize(50)
             text("Game by V Sriram", 600, 700)
             //image(playerImage, 200, 400)
@@ -983,28 +1019,87 @@ function draw(){
                 // net.visible = true
                 // backarm1.visible = true
                 // backarm2.visible = true
+
+            }
+
+
+            if((ball.collides(floor) || ball.collides(table) || ball.collides(player1) || ball.collides(player2) || ball.collides(playButton))){
+               
+                if(abs(bounceFrame - frameCount) > 6){
+                    tableSound.play()
+                }
+                
+                bounceFrame = frameCount
+            }
+            if(ball.mouse.dragging()){
+                ball.moveTowards(mouse, 1 )
             }
         } else if (winScreen == true){
+            fill(0, 0, 0, 190)
+            //frameCount -= 1
+            
+            for(let i = 0; i < 12; i++){
+                image(backgroundImages[0], i*100, 0)
+            }
+            for(let i = 0; i < 12; i++){
+                image(floorImages[0], i*100, 512)
+            }
+            //rect(0, 0, 1200, 330)
+            
+            
             fill(0, 0, 0, min(200, (frameCount-endFrame)*5))
             rect(0, 0, 1200, 800)
-            textStyle(pixelFont, 20)
+            textFont(pixelFont, 20)
             textSize(80)
 
             if(score1 > score2){
                 fill(255, 0, 0, min(255, (frameCount-endFrame)*5))
-                text("Red Wins!", 600, 300)
+                text("Red Wins!", 600, 200)
             } else {
                 fill(0, 0, 255, min(255, (frameCount-endFrame)*5))
-                text("Blue Wins!", 600, 300)
+                text("Blue Wins!", 600, 200)
             }
+
+            playButton.visible = true
+            playButton.textSize = 50/2
+            playButton.text = "New Game"
+            console.log("Rip Bozo L", frameCount - playClickedframe)
+            playButton.y = 400
+            if(mouse.pressing()){
+                gameStarted = true
+                controlScreen = false
+                playButton.visible = false
+                playButton.collider = "none"
+                console.log("aarmabikalaam")
+                table.visible = false
+                net.visible = true
+                backarm1.visible = true
+                backarm2.visible = true
+                frameCount = 0
+                roundFrame = -60
+                powerFrame = -1000
+                score1 = 0
+                score2 = 0
+            }
+            drawTable()
         } else {
-            fill(20)
+            fill(0, 0, 0, 190)
             //frameCount -= 1
+            
+            for(let i = 0; i < 12; i++){
+                image(backgroundImages[0], i*100, 0)
+            }
+            for(let i = 0; i < 12; i++){
+                image(floorImages[0], i*100, 512)
+            }
+            //rect(0, 0, 1200, 330)
+            
             rect(0, 0, 1200, 800)
             fill(255)
             text("Controls", 600, 100)
             image(leftControlImage, 20, 150)
             image(rightControlImage, 680, 150)
+            playButton.textSize = 80/2
             playButton.text = "OK!"
             playButton.y = 500
             if(mouse.pressing() && playButton.mouse.pressing() && frameCount - playClickedframe > 2){
@@ -1020,6 +1115,17 @@ function draw(){
                 frameCount = 0
                 roundFrame = -60
             }
+            if((ball.collides(floor) || ball.collides(table) || ball.collides(player1) || ball.collides(player2) || ball.collides(playButton))){
+               
+                if(abs(bounceFrame - frameCount) > 6){
+                    tableSound.play()
+                }
+                
+                bounceFrame = frameCount
+            }
+            if(ball.mouse.dragging()){
+                ball.moveTowards(mouse, 1 )
+            }
     
         }
         
@@ -1034,29 +1140,50 @@ function draw(){
         } else if(ball.collides(table) || ball.collides(floor)){
             tableSound.play()
         }
+
+        //fill(0, 0, 0, 190)
+        //frameCount -= 1
+        
+        for(let i = 0; i < 12; i++){
+            image(backgroundImages[0], i*100, 0)
+        }
+        for(let i = 0; i < 12; i++){
+            image(floorImages[0], i*100, 512)
+        }
+        //rect(0, 0, 1200, 330)
+        
+        //rect(0, 0, 1200, 800)
         
         if(floorMode == 0){
             fill(194, 232, 255)
             noStroke()
-            rect(0, 550, 1200, 50)
+            rect(0, 512, 1200, 88)
             
             strokeWeight(1)
             stroke(0)
         }
-        fill(200)
-        noStroke()
-        rect(0, 0, 1200, 400)
-        fill(200)
-        noStroke()
-        rect(0, 150, 1200, 200)
-        strokeWeight(1)
-        stroke(0)
+        // fill(200)
+        // noStroke()
+        // rect(0, 0, 1200, 400)
+        // fill(200)
+        // noStroke()
+        // rect(0, 150, 1200, 200)
+        // strokeWeight(1)
+        // stroke(0)
         
         fill('red')
         if(scored == "LEFT"){
-            text(score1-1, 500 , 100 - min(20, (frameCount - roundFrame))*5)
-            text(score1, 500 , 200 - min(20, (frameCount - roundFrame))*5)
+            // text(score1-1, 500 , 100 - min(20, (frameCount - roundFrame))*5)
+            // text(score1, 500 , 200 - min(20, (frameCount - roundFrame))*5)
 
+            if((frameCount - roundFrame)%10 < 5){
+                fill("yellow")
+            } else {
+                fill("white")
+            }
+            text(score1, 500 , 100)
+            
+            fill('red')
             if((frameCount - roundFrame)%20 < 12){
                 text("◀ Point Red", 600, 300)
             } else {
@@ -1068,8 +1195,15 @@ function draw(){
         
         fill('blue')
         if(scored == "RIGHT"){
-            text(score2-1, 700 , 100 - min(20, (frameCount - roundFrame))*5)
-            text(score2, 700 , 200 - min(20, (frameCount - roundFrame))*5)
+            // text(score2-1, 700 , 100 - min(20, (frameCount - roundFrame))*5)
+            // text(score2, 700 , 200 - min(20, (frameCount - roundFrame))*5)
+            if((frameCount - roundFrame)%10 < 5){
+                fill("yellow")
+            } else {
+                fill("white")
+            }
+            text(score2, 700 , 100)
+            fill('blue')
             if((frameCount - roundFrame)%20 < 12){
                 text("Point Blue ▶", 600, 300)
             } else {
@@ -1078,6 +1212,7 @@ function draw(){
         } else {
             text(score2, 700 , 100)
         }
+        drawTable()
 
         
     } else if (frameCount - roundFrame == 60 || frameCount - roundFrame == 150){
@@ -1093,12 +1228,24 @@ function draw(){
         if(floorMode == 0){
             fill(194, 232, 255)
             noStroke()
-            rect(0, 550, 1200, 50)
+            rect(0, 512, 1200, 88)
             
             strokeWeight(1)
             stroke(0)
         }
-        fill(0, 0, 0, min(25, 150-(frameCount - roundFrame))*5)
+        
+            //frameCount -= 1
+            
+        for(let i = 0; i < 12; i++){
+            image(backgroundImages[0], i*100, 0)
+        }
+        for(let i = 0; i < 12; i++){
+            image(floorImages[0], i*100, 512)
+        }
+        //rect(0, 0, 1200, 330)
+        
+        //rect(0, 0, 1200, 800)
+        fill(0, 0, 0, min(40, 150-(frameCount - roundFrame))*5)
         rect(0, 0, 1200, 800)
         world.gravity.y = 0
         ball.velocity.x = 0
@@ -1163,6 +1310,7 @@ function draw(){
         textFont(pixelFont, (90-(wordCount*10))/2)
 
         text(descText, 600, 200)
+        drawTable()
     } else {
         
         renderRound()
