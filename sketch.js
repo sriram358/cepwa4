@@ -147,7 +147,7 @@ function setup(){
     table.img.scale.y = 0.6
     powerup.img = `assets/power${powerType}.png`
     powerup.img.scale = 0.5
-    textAlign(CENTER)
+    textAlign(CENTER, CENTER)
     leftControlImage.resize(500, 500)
     rightControlImage.resize(500, 500)
     
@@ -253,6 +253,8 @@ function costumeChange(){
         windSound.stop()
         return
     }
+    powerFrame = -1000
+    powerup.visible = false
     windFrame = -10000
     windSound.stop()
     costume1 = Math.floor(random(1, 6))
@@ -391,14 +393,16 @@ function renderRound(){
         strokeWeight(1)
         stroke(0)
     }
+    fill(78, 29, 99)
+    rect(400, 20, 400, 93)
     drawBall()
     //renderBallTrail()
     fill('red')
     
-    text(score1, 500, 100)
+    text(score1, 500, 70)
     fill('blue')
     
-    text(score2, 700, 100)
+    text(score2, 700, 70)
     drawPlayer1()
     drawPlayer2()
     renderArm1()
@@ -967,6 +971,7 @@ function draw(){
     
     background(200)
     
+    
     drawPlayer1()
     drawPlayer2()
     renderArm1()
@@ -1162,6 +1167,8 @@ function draw(){
             strokeWeight(1)
             stroke(0)
         }
+        fill(78, 29, 99)
+        rect(400, 20, 400, 93)
         // fill(200)
         // noStroke()
         // rect(0, 0, 1200, 400)
@@ -1177,11 +1184,14 @@ function draw(){
             // text(score1, 500 , 200 - min(20, (frameCount - roundFrame))*5)
 
             if((frameCount - roundFrame)%10 < 5){
+                textSize(80)
                 fill("yellow")
             } else {
+                textSize(60)
                 fill("white")
             }
-            text(score1, 500 , 100)
+            text(score1, 500 , 70)
+            textSize(60)
             
             fill('red')
             if((frameCount - roundFrame)%20 < 12){
@@ -1190,7 +1200,7 @@ function draw(){
                 fill(255, 0, 0, (20-(frameCount - roundFrame)%20)*31.8)
             }
         } else {
-            text(score1, 500 , 100)
+            text(score1, 500 , 70)
         }
         
         fill('blue')
@@ -1198,11 +1208,14 @@ function draw(){
             // text(score2-1, 700 , 100 - min(20, (frameCount - roundFrame))*5)
             // text(score2, 700 , 200 - min(20, (frameCount - roundFrame))*5)
             if((frameCount - roundFrame)%10 < 5){
+                textSize(80)
                 fill("yellow")
             } else {
+                textSize(60)
                 fill("white")
             }
-            text(score2, 700 , 100)
+            text(score2, 700 , 70)
+            textSize(60)
             fill('blue')
             if((frameCount - roundFrame)%20 < 12){
                 text("Point Blue ▶", 600, 300)
@@ -1210,7 +1223,7 @@ function draw(){
                 fill(255, 0, 0, (20-(frameCount - roundFrame)%20)*31.8)
             }
         } else {
-            text(score2, 700 , 100)
+            text(score2, 700 , 70)
         }
         drawTable()
 
@@ -1242,6 +1255,16 @@ function draw(){
         for(let i = 0; i < 12; i++){
             image(floorImages[0], i*100, 512)
         }
+
+        if(floorMode == 0){
+            fill(194, 232, 255)
+            noStroke()
+            rect(0, 512, 1200, 88)
+            
+            strokeWeight(1)
+            stroke(0)
+        }
+
         //rect(0, 0, 1200, 330)
         
         //rect(0, 0, 1200, 800)
@@ -1252,12 +1275,14 @@ function draw(){
         ball.velocity.y = 0
         fill("white")
         text(Math.ceil((150 - (frameCount - roundFrame))/30), 600, 400)
+        fill(78, 29, 99)
+        rect(400, 20, 400, 93)
         fill('red')
     
-        text(score1, 500, 100)
+        text(score1, 500, 70)
         fill('blue')
         
-        text(score2, 700, 100)
+        text(score2, 700, 70)
         
         let descText = ""
         let wordCount = 0
