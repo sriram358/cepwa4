@@ -36,6 +36,7 @@ let bounceFrame = -1000
 let backgroundImages = []
 let floorImages = []
 let musicTime = 0
+let clapSound, clickSound, whistleSound, timerSound
 function preload(){
     pixelFont = loadFont("PressStart.ttf")
     tableSound = loadSound("table.mp3")
@@ -43,7 +44,13 @@ function preload(){
     pianoSound = loadSound("music.mp3")
     fireSound = loadSound("fire.mp3")
     windSound = loadSound("wind.mp3")
+    clapSound = loadSound("clap.mp3")
+    clickSound = loadSound("click.mp3")
+    whistleSound = loadSound("whistle.mp3")
+    timerSound = loadSound("timer.mp3")
     windSound.setVolume(0.5)
+    clapSound.setVolume(0.4)
+    timerSound.setVolume(0.2)
     powerSound = loadSound("powerup.mp3")
     playerImage = loadImage("assets/char1.png")
     playerImage2 = loadImage("assets/char1a.png")
@@ -259,6 +266,7 @@ function costumeChange(){
         powerup.visible = false
         return
     }
+    timerSound.play()
     powerFrame = -1000
     powerup.visible = false
     windFrame = -10000
@@ -323,7 +331,7 @@ function reset(){
     // frameCount = 0
     // roundFrame = 0
     lastPlayer = 0
-   
+    whistleSound.play()
     trailList = []
     windList = []
     ballLastCollide = "NONE"
@@ -565,6 +573,7 @@ function renderRound(){
                 score2 += 1
                 scored = "RIGHT"
                 roundFrame = frameCount
+                clapSound.play()
                 //reset()
             } else {
                 ballLastCollide = "LEFT"
@@ -575,6 +584,7 @@ function renderRound(){
                 score1 += 1
                 scored = "LEFT"
                 roundFrame = frameCount
+                clapSound.play()
                 //reset()
             } else {
                 ballLastCollide = "RIGHT"
@@ -594,6 +604,7 @@ function renderRound(){
                 scored = "LEFT"
                 
             }
+            clapSound.play()
             
             roundFrame = frameCount
             //reset()
@@ -601,6 +612,7 @@ function renderRound(){
             if(ballLastCollide == "RIGHT" || ballLastCollide == "RPADDLE"){
                 score1 += 1
                 scored = "LEFT"
+                
                 //reset()
             } else {
                 score2 += 1
@@ -608,6 +620,7 @@ function renderRound(){
             }
             
             roundFrame = frameCount
+            clapSound.play()
         }
     }
     
@@ -1023,6 +1036,7 @@ function draw(){
             if(mouse.pressing() && playButton.mouse.pressing()){
                 //gameStarted = true
                 controlScreen = true
+                clickSound.play()
                 playClickedframe = frameCount
                 // playButton.visible = false
                 // playButton.collider = "none"
@@ -1089,6 +1103,7 @@ function draw(){
                 playButton.color = "lime"
             }
             if(mouse.pressing()){
+                clickSound.play()
                 gameStarted = true
                 controlScreen = false
                 playButton.visible = false
@@ -1127,6 +1142,7 @@ function draw(){
             playButton.text = "OK!"
             playButton.y = 500
             if(mouse.pressing() && playButton.mouse.pressing() && frameCount - playClickedframe > 2){
+                clickSound.play()
                 gameStarted = true
                 controlScreen = false
                 playButton.visible = false
@@ -1299,6 +1315,9 @@ function draw(){
         ball.velocity.y = 0
         fill("white")
         text(Math.ceil((150 - (frameCount - roundFrame))/30), 600, 400)
+        if((150 - (frameCount - roundFrame))/30 == 0 || (150 - (frameCount - roundFrame))/30 == 1 || (150 - (frameCount - roundFrame))/30 == 2 || (150 - (frameCount - roundFrame))/30 == 3){
+            timerSound.play()
+        }
         fill(78, 29, 99)
         rect(400, 20, 400, 93)
         fill('red')
