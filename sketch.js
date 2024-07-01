@@ -52,7 +52,7 @@ function preload(){
     timerSound = loadSound("timer.mp3")
     windSound.setVolume(0.5)
     clapSound.setVolume(0.4)
-    timerSound.setVolume(0.2)
+    timerSound.setVolume(0.15)
     powerSound = loadSound("powerup.mp3")
     playerImage = loadImage("assets/char1.png")
     playerImage2 = loadImage("assets/char1a.png")
@@ -1394,6 +1394,9 @@ function draw(){
 
         text(descText, 600, 200)
         drawTable()
+
+        fill(0, 0, 0, max(0, 255 -((frameCount - roundFrame)-60)*13))
+        rect(0, 0, 1200, 800)
     } else {
         
         renderRound()
