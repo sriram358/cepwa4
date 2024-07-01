@@ -61,9 +61,11 @@ function setup(){
     
     playButton = new Sprite(600, 400, 200, 100)
     playButton.textSize = 80/2
-    playButton.text = "Play!"
+    playButton.text = "Play"
     playButton.visible = false
     playButton.collider = "kinematic"
+    playButton.color = "lime"
+    
     player1 = new Sprite(100, 350, 50)
     player2 = new Sprite(1100, 350, 50)
     floor = new Sprite(600, 600, 1200, 4)
@@ -76,6 +78,7 @@ function setup(){
     ball = new Sprite(800, 340, 20)
     powerup = new Sprite(600, 400, 30)
     powerup.collider = "none"
+    net.color = "lime"
     
     backarm1 = new Sprite(100, 400-200, 30, 115)
     backarm1.offset.y = -50
@@ -252,6 +255,8 @@ function costumeChange(){
         endFrame = frameCount
         windFrame = -10000
         windSound.stop()
+        powerFrame = -10000
+        powerup.visible = false
         return
     }
     powerFrame = -1000
@@ -1029,6 +1034,12 @@ function draw(){
 
             }
 
+            if(playButton.mouse.hovering()){
+                playButton.color = "yellow"
+            } else {
+                playButton.color = "lime"
+            }
+
 
             if((ball.collides(floor) || ball.collides(table) || ball.collides(player1) || ball.collides(player2) || ball.collides(playButton))){
                
@@ -1072,6 +1083,11 @@ function draw(){
             playButton.text = "New Game"
             console.log("Rip Bozo L", frameCount - playClickedframe)
             playButton.y = 400
+            if(playButton.mouse.hovering()){
+                playButton.color = "yellow"
+            } else {
+                playButton.color = "lime"
+            }
             if(mouse.pressing()){
                 gameStarted = true
                 controlScreen = false
@@ -1088,6 +1104,7 @@ function draw(){
                 score1 = 0
                 score2 = 0
             }
+            
             drawTable()
         } else {
             fill(0, 0, 0, 190)
@@ -1121,6 +1138,11 @@ function draw(){
                 backarm2.visible = true
                 frameCount = 0
                 roundFrame = -60
+            }
+            if(playButton.mouse.hovering()){
+                playButton.color = "yellow"
+            } else {
+                playButton.color = "lime"
             }
             if((ball.collides(floor) || ball.collides(table) || ball.collides(player1) || ball.collides(player2) || ball.collides(playButton))){
                
@@ -1343,7 +1365,7 @@ function draw(){
         renderRound()
         textFont(pixelFont, 120/2)
         if(frameCount - roundFrame < 210 && frameCount - roundFrame > 2){
-            fill(0, 0, 0, (210-(frameCount - roundFrame))*4.25)
+            fill(255, 255, 255, (210-(frameCount - roundFrame))*4.25)
             stroke(0, 0, 0, (210-(frameCount - roundFrame))*4.25)
             text("Play!", 600, 400)
             stroke(0)
