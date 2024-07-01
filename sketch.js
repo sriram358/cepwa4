@@ -37,6 +37,8 @@ let backgroundImages = []
 let floorImages = []
 let musicTime = 0
 let clapSound, clickSound, whistleSound, timerSound
+let backID = 0
+
 function preload(){
     pixelFont = loadFont("PressStart.ttf")
     tableSound = loadSound("table.mp3")
@@ -57,8 +59,9 @@ function preload(){
     tableImage = loadImage("assets/table.png")
     leftControlImage = loadImage("assets/leftcontrols.png")
     rightControlImage = loadImage("assets/rightcontrols.png")
-    backgroundImages.push(loadImage("assets/back1.png"))
-    floorImages.push(loadImage("assets/floor1.png"))
+    backgroundImages = [loadImage("assets/back1.png"), loadImage("assets/back2.png"), loadImage("assets/back3.png")]
+    floorImages = [loadImage("assets/floor1.png"), loadImage("assets/floor2.png"), loadImage("assets/floor3.png")]
+    
 
 }
 
@@ -325,6 +328,9 @@ function costumeChange(){
         net.pos.y = 505
         net.height = 20
     }
+
+    nn = Math.floor(random(0, 3))
+    backID = nn
 }
 
 function reset(){
@@ -394,10 +400,10 @@ function renderRound(){
     background(191, 164, 113)
     rect(0, 0, 1200, 800)
     for(let i = 0; i < 12; i++){
-        image(backgroundImages[0], i*100, 0)
+        image(backgroundImages[backID], i*100, 0)
     }
     for(let i = 0; i < 12; i++){
-        image(floorImages[0], i*100, 512)
+        image(floorImages[backID], i*100, 512)
     }
     if(floorMode == 0){
         fill(194, 232, 255)
@@ -1014,10 +1020,10 @@ function draw(){
             //frameCount -= 1
             
             for(let i = 0; i < 12; i++){
-                image(backgroundImages[0], i*100, 0)
+                image(backgroundImages[backID], i*100, 0)
             }
             for(let i = 0; i < 12; i++){
-                image(floorImages[0], i*100, 512)
+                image(floorImages[backID], i*100, 512)
             }
             //rect(0, 0, 1200, 330)
             
@@ -1071,10 +1077,10 @@ function draw(){
             //frameCount -= 1
             
             for(let i = 0; i < 12; i++){
-                image(backgroundImages[0], i*100, 0)
+                image(backgroundImages[backID], i*100, 0)
             }
             for(let i = 0; i < 12; i++){
-                image(floorImages[0], i*100, 512)
+                image(floorImages[backID], i*100, 512)
             }
             //rect(0, 0, 1200, 330)
             
@@ -1126,10 +1132,10 @@ function draw(){
             //frameCount -= 1
             
             for(let i = 0; i < 12; i++){
-                image(backgroundImages[0], i*100, 0)
+                image(backgroundImages[backID], i*100, 0)
             }
             for(let i = 0; i < 12; i++){
-                image(floorImages[0], i*100, 512)
+                image(floorImages[backID], i*100, 512)
             }
             //rect(0, 0, 1200, 330)
             
@@ -1141,6 +1147,7 @@ function draw(){
             playButton.textSize = 80/2
             playButton.text = "OK!"
             playButton.y = 500
+
             if(mouse.pressing() && playButton.mouse.pressing() && frameCount - playClickedframe > 2){
                 clickSound.play()
                 gameStarted = true
@@ -1171,6 +1178,14 @@ function draw(){
             if(ball.mouse.dragging()){
                 ball.moveTowards(mouse, 1 )
             }
+
+            if(frameCount - playClickedframe < 14){
+                fill(0, 0, 0, max(0, 255 - (frameCount - playClickedframe)*13))
+                rect(0, 0, 1200, 600)
+            }
+
+           
+            
     
         }
         
@@ -1190,10 +1205,10 @@ function draw(){
         //frameCount -= 1
         
         for(let i = 0; i < 12; i++){
-            image(backgroundImages[0], i*100, 0)
+            image(backgroundImages[backID], i*100, 0)
         }
         for(let i = 0; i < 12; i++){
-            image(floorImages[0], i*100, 512)
+            image(floorImages[backID], i*100, 512)
         }
         //rect(0, 0, 1200, 330)
         
@@ -1290,10 +1305,10 @@ function draw(){
             //frameCount -= 1
             
         for(let i = 0; i < 12; i++){
-            image(backgroundImages[0], i*100, 0)
+            image(backgroundImages[backID], i*100, 0)
         }
         for(let i = 0; i < 12; i++){
-            image(floorImages[0], i*100, 512)
+            image(floorImages[backID], i*100, 512)
         }
 
         if(floorMode == 0){
@@ -1390,6 +1405,8 @@ function draw(){
             stroke(0)
         }
     }
+
+    
     
     
 }   
